@@ -20,7 +20,7 @@ public interface BlockAccessor {
 	}
 
 	@Accessor("key")
-	String retroapi$getKey();
+	String retroapi$get2Key();
 
 	@Accessor("key")
 	void retroapi$setKey(String key);

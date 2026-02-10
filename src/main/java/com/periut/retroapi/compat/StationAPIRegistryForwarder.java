@@ -1,17 +1,18 @@
 package com.periut.retroapi.compat;
 
-import com.periut.retroapi.registry.BlockRegistration;
-import com.periut.retroapi.registry.ItemRegistration;
-import com.periut.retroapi.registry.RetroRegistry;
-import net.modificationstation.stationapi.api.event.registry.BlockRegistryEvent;
-import net.modificationstation.stationapi.api.event.registry.ItemRegistryEvent;
+import com.periut.retroapi.api.RetroTextures;
+import net.mine_diver.unsafeevents.listener.EventListener;
+import net.modificationstation.stationapi.api.client.event.texture.TextureRegisterEvent;
 import net.modificationstation.stationapi.api.mod.entrypoint.Entrypoint;
 import net.modificationstation.stationapi.api.mod.entrypoint.EventBusPolicy;
-import net.modificationstation.stationapi.api.util.Identifier;
 import net.modificationstation.stationapi.api.util.Namespace;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * StationAPI event bus entrypoint - handles texture registration during StationAPI's lifecycle.
+ * Only loaded when StationAPI is present.
+ */
 @Entrypoint(eventBus = @EventBusPolicy(registerInstance = true))
 public class StationAPIRegistryForwarder {
 	private static final Logger LOGGER = LogManager.getLogger("RetroAPI/StationAPI");
@@ -22,19 +23,9 @@ public class StationAPIRegistryForwarder {
 	@Entrypoint.Logger
 	public Logger logger = LOGGER;
 
-	public void registerBlocks(BlockRegistryEvent event) {
-		for (BlockRegistration reg : RetroRegistry.getBlocks()) {
-			Identifier id = Identifier.of(reg.getId().namespace() + ":" + reg.getId().path());
-			event.register(id, reg.getBlock());
-			LOGGER.info("Forwarded block {} to StationAPI registry", reg.getId());
-		}
-	}
-
-	public void registerItems(ItemRegistryEvent event) {
-		for (ItemRegistration reg : RetroRegistry.getItems()) {
-			Identifier id = Identifier.of(reg.getId().namespace() + ":" + reg.getId().path());
-			event.register(id, reg.getItem());
-			LOGGER.info("Forwarded item {} to StationAPI registry", reg.getId());
-		}
+	@EventListener
+	public void registerTextures(TextureRegisterEvent event) {
+		LOGGER.info("Resolving RetroAPI textures with StationAPI atlas system");
+		RetroTextures.resolveStationAPITextures();
 	}
 }

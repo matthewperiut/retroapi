@@ -8,15 +8,11 @@ public class BlockRegistration {
 	private final RetroIdentifier id;
 	private final Block block;
 	private final BlockItem blockItem;
-	private final String textureNamespace;
-	private final String texturePath;
 
-	public BlockRegistration(RetroIdentifier id, Block block, BlockItem blockItem, String textureNamespace, String texturePath) {
+	public BlockRegistration(RetroIdentifier id, Block block, BlockItem blockItem) {
 		this.id = id;
 		this.block = block;
 		this.blockItem = blockItem;
-		this.textureNamespace = textureNamespace;
-		this.texturePath = texturePath;
 	}
 
 	public RetroIdentifier getId() {
@@ -29,13 +25,5 @@ public class BlockRegistration {
 
 	public BlockItem getBlockItem() {
 		return blockItem;
-	}
-
-	public String getTextureNamespace() {
-		return textureNamespace;
-	}
-
-	public String getTexturePath() {
-		return texturePath;
 	}
 }

@@ -18,7 +18,8 @@
 		]
 	},
 	"mixins": [
-		"retroapi.mixins.json"
+		"retroapi.mixins.json",
+		"retroapi.stationapi.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.17.3",

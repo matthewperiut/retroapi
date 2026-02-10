@@ -2,6 +2,7 @@ package com.periut.retroapi;
 
 import com.periut.retroapi.api.event.BlockRegistrationCallback;
 import com.periut.retroapi.api.event.ItemRegistrationCallback;
+import com.periut.retroapi.compat.StationAPICompat;
 import com.periut.retroapi.lang.LangLoader;
 import com.periut.retroapi.mixin.WorldStorageAccessor;
 import com.periut.retroapi.registry.IdAssigner;
@@ -24,23 +25,26 @@ public class RetroAPI implements ModInitializer {
 	public void init() {
 		LOGGER.info("RetroAPI initializing");
 
-		// Fire registration events so mods can register their blocks/items
-		BlockRegistrationCallback.EVENT.invoker().run();
-		ItemRegistrationCallback.EVENT.invoker().run();
-
-		LOGGER.info("Registered {} blocks and {} items",
-			RetroRegistry.getBlocks().size(), RetroRegistry.getItems().size());
-
 		boolean hasStationAPI = FabricLoader.getInstance().isModLoaded("stationapi");
 
 		if (!hasStationAPI) {
+			// Fire registration events so mods can register their blocks/items
+			BlockRegistrationCallback.EVENT.invoker().run();
+			ItemRegistrationCallback.EVENT.invoker().run();
+
+			LOGGER.info("Registered {} blocks and {} items",
+				RetroRegistry.getBlocks().size(), RetroRegistry.getItems().size());
+
 			// Register world load hooks for ID assignment (PREPARE_WORLD fires after save is loaded)
 			MinecraftClientEvents.PREPARE_WORLD.register(this::onClientLoadWorld);
 
 			// Register lang loading on client ready
 			MinecraftClientEvents.READY.register(minecraft -> LangLoader.loadTranslations());
 		} else {
-			LOGGER.info("StationAPI detected - delegating ID management and textures to StationAPI");
+			// When StationAPI is present, it handles ID management and textures.
+			// Register our lang path so StationAPI scans retroapi/lang/ directories.
+			StationAPICompat.registerLangPath();
+			LOGGER.info("StationAPI detected - delegating registration, ID management, and textures to StationAPI");
 		}
 	}
 

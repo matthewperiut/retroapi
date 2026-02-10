@@ -138,9 +138,10 @@ tasks.register('remapTestJar', net.fabricmc.loom.task.RemapJarTask) {
 	inputFile = tasks.named('testJar').flatMap { it.archiveFile }
 	archiveClassifier = 'testmod'
 	addNestedDependencies = false
+	classpath.from(sourceSets.test.compileClasspath)
 }
 
-build.dependsOn remapTestJar
+//build.dependsOn remapTestJar
 
 publishing {
 	publications {

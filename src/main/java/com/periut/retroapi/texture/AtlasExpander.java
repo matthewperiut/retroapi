@@ -1,8 +1,7 @@
 package com.periut.retroapi.texture;
 
-import com.periut.retroapi.registry.BlockRegistration;
-import com.periut.retroapi.registry.ItemRegistration;
-import com.periut.retroapi.registry.RetroRegistry;
+import com.periut.retroapi.api.RetroTexture;
+import com.periut.retroapi.api.RetroTextures;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +14,6 @@ import java.util.List;
 
 public class AtlasExpander {
 	private static final Logger LOGGER = LogManager.getLogger("RetroAPI/AtlasExpander");
-	private static final int SPRITE_SIZE = 16;
 	private static final int ATLAS_COLUMNS = 16;
 
 	public static BufferedImage expandTerrainAtlas(BufferedImage original) {
@@ -23,39 +21,28 @@ public class AtlasExpander {
 			return original;
 		}
 
-		List<BlockRegistration> blocks = RetroRegistry.getBlocks();
-		if (blocks.isEmpty()) {
+		List<RetroTexture> textures = RetroTextures.getTerrainTextures();
+		if (textures.isEmpty()) {
 			return original;
 		}
 
 		int spriteSize = original.getWidth() / ATLAS_COLUMNS;
 		int originalRows = original.getHeight() / spriteSize;
 
-		// Find first free slot
-		int nextFreeSlot = findFirstFreeTerrainSlot();
+		int maxSlot = textures.stream().mapToInt(t -> t.id).max().orElse(0);
+		int neededRows = Math.max(originalRows, (maxSlot + ATLAS_COLUMNS) / ATLAS_COLUMNS);
 
-		// Calculate if we need to expand
-		int neededSlots = nextFreeSlot + blocks.size();
-		int neededRows = Math.max(originalRows, (neededSlots + ATLAS_COLUMNS - 1) / ATLAS_COLUMNS);
-
-		// Always create a new image (copy) so we don't modify the original
 		BufferedImage atlas = new BufferedImage(original.getWidth(), neededRows * spriteSize, BufferedImage.TYPE_INT_ARGB);
 		atlas.getGraphics().drawImage(original, 0, 0, null);
 
-		int slot = nextFreeSlot;
-		for (BlockRegistration reg : blocks) {
-			BufferedImage texture = loadTexture(
-				reg.getTextureNamespace(),
-				"block/" + reg.getTexturePath()
-			);
+		for (RetroTexture tex : textures) {
+			BufferedImage texture = loadTexture(tex.getIdentifier().namespace(), "block/" + tex.getIdentifier().path());
 			if (texture != null) {
-				int col = slot % ATLAS_COLUMNS;
-				int row = slot / ATLAS_COLUMNS;
+				int col = tex.id % ATLAS_COLUMNS;
+				int row = tex.id / ATLAS_COLUMNS;
 				atlas.getGraphics().drawImage(texture, col * spriteSize, row * spriteSize, spriteSize, spriteSize, null);
-				reg.getBlock().sprite = slot;
-				LOGGER.debug("Assigned block texture {} -> sprite slot {}", reg.getId(), slot);
+				LOGGER.debug("Composited block texture {} at slot {}", tex.getIdentifier(), tex.id);
 			}
-			slot++;
 		}
 
 		return atlas;
@@ -66,50 +53,31 @@ public class AtlasExpander {
 			return original;
 		}
 
-		List<ItemRegistration> items = RetroRegistry.getItems();
-		if (items.isEmpty()) {
+		List<RetroTexture> textures = RetroTextures.getItemTextures();
+		if (textures.isEmpty()) {
 			return original;
 		}
 
 		int spriteSize = original.getWidth() / ATLAS_COLUMNS;
 		int originalRows = original.getHeight() / spriteSize;
 
-		int nextFreeSlot = findFirstFreeItemSlot();
-		int neededSlots = nextFreeSlot + items.size();
-		int neededRows = Math.max(originalRows, (neededSlots + ATLAS_COLUMNS - 1) / ATLAS_COLUMNS);
+		int maxSlot = textures.stream().mapToInt(t -> t.id).max().orElse(0);
+		int neededRows = Math.max(originalRows, (maxSlot + ATLAS_COLUMNS) / ATLAS_COLUMNS);
 
-		// Always create a new image (copy) so we don't modify the original
 		BufferedImage atlas = new BufferedImage(original.getWidth(), neededRows * spriteSize, BufferedImage.TYPE_INT_ARGB);
 		atlas.getGraphics().drawImage(original, 0, 0, null);
 
-		int slot = nextFreeSlot;
-		for (ItemRegistration reg : items) {
-			BufferedImage texture = loadTexture(
-				reg.getTextureNamespace(),
-				"item/" + reg.getTexturePath()
-			);
+		for (RetroTexture tex : textures) {
+			BufferedImage texture = loadTexture(tex.getIdentifier().namespace(), "item/" + tex.getIdentifier().path());
 			if (texture != null) {
-				int col = slot % ATLAS_COLUMNS;
-				int row = slot / ATLAS_COLUMNS;
+				int col = tex.id % ATLAS_COLUMNS;
+				int row = tex.id / ATLAS_COLUMNS;
 				atlas.getGraphics().drawImage(texture, col * spriteSize, row * spriteSize, spriteSize, spriteSize, null);
-				reg.getItem().setSprite(slot);
-				LOGGER.debug("Assigned item texture {} -> sprite slot {}", reg.getId(), slot);
+				LOGGER.debug("Composited item texture {} at slot {}", tex.getIdentifier(), tex.id);
 			}
-			slot++;
 		}
 
 		return atlas;
-	}
-
-	private static int findFirstFreeTerrainSlot() {
-		// Vanilla b1.7.3 uses terrain.png slots up to about index 112
-		// Start scanning from a safe offset
-		return 128;
-	}
-
-	private static int findFirstFreeItemSlot() {
-		// Vanilla b1.7.3 uses gui/items.png slots up to about index 127
-		return 128;
 	}
 
 	private static BufferedImage loadTexture(String namespace, String texturePath) {

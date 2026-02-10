@@ -14,25 +14,34 @@ public class TestMod implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger("RetroAPI Test");
 
 	public static Block TEST_BLOCK;
+	public static Block COLOR_BLOCK;
 	public static Item TEST_ITEM;
 
 	@Override
 	public void init() {
 		LOGGER.info("RetroAPI Test Mod initializing");
 
-		TEST_BLOCK = RetroBlock.create(new RetroIdentifier("retroapi_test", "test_block"))
-			.material(Material.STONE)
-			.hardness(1.5f)
-			.resistance(10.0f)
-			.sounds(Block.STONE_SOUNDS)
-			.translationKey("testBlock")
-			.build();
+		TEST_BLOCK = new RetroBlock(Material.STONE)
+			.setSounds(Block.STONE_SOUNDS)
+			.setStrength(1.5f)
+			.setBlastResistance(10.0f)
+			.setKey("testBlock")
+			.texture(new RetroIdentifier("retroapi_test", "test_block"))
+			.register(new RetroIdentifier("retroapi_test", "test_block"));
 
-		TEST_ITEM = RetroItem.create(new RetroIdentifier("retroapi_test", "test_item"))
-			.maxStackSize(64)
-			.translationKey("testItem")
-			.build();
+		COLOR_BLOCK = new ColorBlock(Material.STONE)
+			.setSounds(Block.STONE_SOUNDS)
+			.setStrength(1.5f)
+			.setBlastResistance(10.0f)
+			.setKey("colorBlock")
+			.register(new RetroIdentifier("retroapi_test", "color_block"));
 
-		LOGGER.info("Test block and item registered");
+		TEST_ITEM = new RetroItem()
+			.setMaxStackSize(64)
+			.setKey("testItem")
+			.texture(new RetroIdentifier("retroapi_test", "test_item"))
+			.register(new RetroIdentifier("retroapi_test", "test_item"));
+
+		LOGGER.info("Test block, color block, and item registered");
 	}
 }
