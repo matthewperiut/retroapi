@@ -10,6 +10,8 @@ import net.minecraft.item.Item;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import net.ornithemc.osl.networking.api.PacketBuffer;
+
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
@@ -208,5 +210,57 @@ public class IdAssigner {
 		((ItemAccessor) item).retroapi$setId(newId);
 
 		LOGGER.debug("Remapped item from {} to {}", oldId, newId);
+	}
+
+	public static void applyFromNetwork(PacketBuffer buffer) {
+		int blockCount = buffer.readVarInt();
+		for (int i = 0; i < blockCount; i++) {
+			String identifier = buffer.readString();
+			int numericId = buffer.readVarInt();
+
+			String[] parts = identifier.split(":", 2);
+			if (parts.length != 2) {
+				LOGGER.warn("Invalid block identifier from server: {}", identifier);
+				continue;
+			}
+			RetroIdentifier retroId = new RetroIdentifier(parts[0], parts[1]);
+			BlockRegistration reg = RetroRegistry.getBlockById(retroId);
+			if (reg == null) {
+				LOGGER.warn("Server has unknown block: {} (id {}), skipping", identifier, numericId);
+				continue;
+			}
+
+			Block block = reg.getBlock();
+			int currentId = ((BlockAccessor) block).retroapi$getId();
+			if (currentId != numericId) {
+				remapBlock(block, currentId, numericId);
+				LOGGER.info("Synced block {} -> ID {} (was {})", identifier, numericId, currentId);
+			}
+		}
+
+		int itemCount = buffer.readVarInt();
+		for (int i = 0; i < itemCount; i++) {
+			String identifier = buffer.readString();
+			int numericId = buffer.readVarInt();
+
+			String[] parts = identifier.split(":", 2);
+			if (parts.length != 2) {
+				LOGGER.warn("Invalid item identifier from server: {}", identifier);
+				continue;
+			}
+			RetroIdentifier retroId = new RetroIdentifier(parts[0], parts[1]);
+			ItemRegistration reg = RetroRegistry.getItemById(retroId);
+			if (reg == null) {
+				LOGGER.warn("Server has unknown item: {} (id {}), skipping", identifier, numericId);
+				continue;
+			}
+
+			Item item = reg.getItem();
+			int currentId = ((ItemAccessor) item).retroapi$getId();
+			if (currentId != numericId) {
+				remapItem(item, currentId, numericId);
+				LOGGER.info("Synced item {} -> ID {} (was {})", identifier, numericId, currentId);
+			}
+		}
 	}
 }
