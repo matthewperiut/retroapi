@@ -8,11 +8,13 @@ public class BlockRegistration {
 	private final RetroIdentifier id;
 	private final Block block;
 	private final BlockItem blockItem;
+	private final int placeholderId;
 
 	public BlockRegistration(RetroIdentifier id, Block block, BlockItem blockItem) {
 		this.id = id;
 		this.block = block;
 		this.blockItem = blockItem;
+		this.placeholderId = block.id;
 	}
 
 	public RetroIdentifier getId() {
@@ -25,5 +27,9 @@ public class BlockRegistration {
 
 	public BlockItem getBlockItem() {
 		return blockItem;
+	}
+
+	public int getPlaceholderId() {
+		return placeholderId;
 	}
 }

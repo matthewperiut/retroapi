@@ -4,13 +4,18 @@
 	"package": "com.periut.retroapi.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
+		"AlphaWorldStorageMixin",
 		"BlockAccessor",
 		"BlockItemAccessor",
 		"ItemAccessor",
 		"LanguageAccessor",
+		"RegionWorldStorageSourceAccessor",
+		"WorldAccessor",
 		"WorldStorageAccessor"
 	],
 	"client": [
+		"MinecraftAccessor",
+		"MinecraftMixin",
 		"TextureManagerMixin"
 	],
 	"server": [
