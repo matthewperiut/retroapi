@@ -5,6 +5,7 @@ import com.periut.retroapi.api.event.ItemRegistrationCallback;
 import com.periut.retroapi.compat.StationAPICompat;
 import com.periut.retroapi.registry.RetroRegistry;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.Block;
 import net.ornithemc.osl.entrypoints.api.ModInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +16,6 @@ public class RetroAPI implements ModInitializer {
 	@Override
 	public void init() {
 		LOGGER.info("RetroAPI initializing");
-
 		boolean hasStationAPI = FabricLoader.getInstance().isModLoaded("stationapi");
 
 		if (!hasStationAPI) {

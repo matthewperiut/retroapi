@@ -27,6 +27,7 @@ public class GiveItemsMixin {
 			if (TestMod.TEST_BLOCK != null) {
 				inventory.addItem(new ItemStack(TestMod.TEST_BLOCK, 64));
 				inventory.addItem(new ItemStack(TestMod.COLOR_BLOCK, 64));
+				inventory.addItem(new ItemStack(TestMod.PIPE_BLOCK, 64));
 				TestMod.LOGGER.info("Gave test block to player");
 			}
 			if (TestMod.TEST_ITEM != null) {

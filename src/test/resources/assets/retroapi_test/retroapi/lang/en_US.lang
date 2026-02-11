@@ -1,3 +1,4 @@
 tile.testBlock.name=Test Block
 tile.colorBlock.name=Color Block
+tile.pipeBlock.name=Pipe
 item.testItem.name=Test Item
