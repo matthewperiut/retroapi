@@ -1,4 +1,4 @@
-package com.periut.retroapi.mixin;
+package com.periut.retroapi.api;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

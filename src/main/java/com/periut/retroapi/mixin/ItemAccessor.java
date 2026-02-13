@@ -4,9 +4,15 @@ import net.minecraft.item.Item;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Item.class)
 public interface ItemAccessor {
+	@Invoker("<init>")
+	static Item retroapi$create(int id) {
+		throw new AssertionError();
+	}
+
 	@Accessor("id")
 	int retroapi$getId();
 

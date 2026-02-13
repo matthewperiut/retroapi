@@ -1,9 +1,6 @@
 package com.periut.retroapi.testmod;
 
-import com.periut.retroapi.api.RenderType;
-import com.periut.retroapi.api.RetroBlock;
-import com.periut.retroapi.api.RetroIdentifier;
-import com.periut.retroapi.api.RetroItem;
+import com.periut.retroapi.api.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
@@ -31,36 +28,38 @@ public class TestMod implements ModInitializer {
 	public void init() {
 		LOGGER.info("RetroAPI Test Mod initializing");
 
-		TEST_BLOCK = new RetroBlock(Material.STONE)
-			.setSounds(Block.STONE_SOUNDS)
-			.setStrength(1.5f)
-			.setBlastResistance(10.0f)
-			.setKey("testBlock")
-			.texture(new RetroIdentifier("retroapi_test", "test_block"))
-			.register(new RetroIdentifier("retroapi_test", "test_block"));
+		TEST_BLOCK = ((RetroBlockAccess) RetroBlockAccess.create(Material.STONE))
+			.retroapi$setSounds(Block.STONE_SOUNDS)
+			.retroapi$setStrength(1.5f)
+			.retroapi$setBlastResistance(10.0f)
+			.retroapi$texture(new RetroIdentifier("retroapi_test", "test_block"))
+			.retroapi$register(new RetroIdentifier("retroapi_test", "test_block"));
+		TEST_BLOCK.setKey("testBlock");
 
-		COLOR_BLOCK = new ColorBlock(Material.STONE)
-			.setSounds(Block.STONE_SOUNDS)
-			.setStrength(1.5f)
-			.setBlastResistance(10.0f)
-			.setKey("colorBlock")
-			.register(new RetroIdentifier("retroapi_test", "color_block"));
+		COLOR_BLOCK = ((RetroBlockAccess) new ColorBlock(Material.STONE))
+			.retroapi$setSounds(Block.STONE_SOUNDS)
+			.retroapi$setStrength(1.5f)
+			.retroapi$setBlastResistance(10.0f)
+			.retroapi$setRenderType(RenderTypes.BLOCK)
+			.retroapi$register(new RetroIdentifier("retroapi_test", "color_block"));
+		COLOR_BLOCK.setKey("colorBlock");
 
-		PIPE_BLOCK = new RetroBlock(Material.STONE)
-			.setSounds(Block.METAL_SOUNDS)
-			.setStrength(2.0f)
-			.setKey("pipeBlock")
-			.setSolidRender(false)
-			.setBlockBounds(4 / 16.0F, 4 / 16.0F, 4 / 16.0F, 12 / 16.0F, 12 / 16.0F, 12 / 16.0F)
-			.setRenderType(PIPE_RENDER_TYPE)
-			.register(new RetroIdentifier("retroapi_test", "pipe"));
-		((RetroBlock) PIPE_BLOCK).setSprite(4);
+		PIPE_BLOCK = ((RetroBlockAccess) RetroBlockAccess.create(Material.STONE))
+			.retroapi$setSounds(Block.METAL_SOUNDS)
+			.retroapi$setStrength(2.0f)
+			.retroapi$setSolidRender(false)
+			.retroapi$setBlockBounds(4 / 16.0F, 4 / 16.0F, 4 / 16.0F, 12 / 16.0F, 12 / 16.0F, 12 / 16.0F)
+			.retroapi$setRenderType(PIPE_RENDER_TYPE)
+			.retroapi$register(new RetroIdentifier("retroapi_test", "pipe"));
+		PIPE_BLOCK.setKey("pipeBlock");
+		((RetroBlockAccess) PIPE_BLOCK).retroapi$setSprite(4);
 
-		TEST_ITEM = new RetroItem()
+		TEST_ITEM = RetroItemAccess.create()
 			.setMaxStackSize(64)
-			.setKey("testItem")
-			.texture(new RetroIdentifier("retroapi_test", "test_item"))
-			.register(new RetroIdentifier("retroapi_test", "test_item"));
+			.setKey("testItem");
+		((RetroItemAccess) TEST_ITEM)
+			.retroapi$texture(new RetroIdentifier("retroapi_test", "test_item"))
+			.retroapi$register(new RetroIdentifier("retroapi_test", "test_item"));
 
 		LOGGER.info("Test block, color block, pipe block, and item registered");
 	}

@@ -12,7 +12,7 @@ import java.util.Map;
  * Usage:
  * <pre>
  * // Use a vanilla render type
- * block.setRenderType(RenderType.STAIRS); // resolves to 10
+ * block.setRenderType(RenderTypes.STAIRS); // resolves to 10
  *
  * // Register and use a custom render type
  * RetroIdentifier SLOPE = RenderType.register(
@@ -24,51 +24,33 @@ import java.util.Map;
  * );
  * block.setRenderType(SLOPE);
  * </pre>
+ *
+ * @see RenderTypes for vanilla render type constants
  */
 public final class RenderType {
-	// Vanilla render type identifiers
-	public static final RetroIdentifier BLOCK = new RetroIdentifier("minecraft", "block");
-	public static final RetroIdentifier CROSS = new RetroIdentifier("minecraft", "cross");
-	public static final RetroIdentifier TORCH = new RetroIdentifier("minecraft", "torch");
-	public static final RetroIdentifier FIRE = new RetroIdentifier("minecraft", "fire");
-	public static final RetroIdentifier LIQUID = new RetroIdentifier("minecraft", "liquid");
-	public static final RetroIdentifier REDSTONE_WIRE = new RetroIdentifier("minecraft", "redstone_wire");
-	public static final RetroIdentifier PLANT = new RetroIdentifier("minecraft", "plant");
-	public static final RetroIdentifier DOOR = new RetroIdentifier("minecraft", "door");
-	public static final RetroIdentifier LADDER = new RetroIdentifier("minecraft", "ladder");
-	public static final RetroIdentifier RAIL = new RetroIdentifier("minecraft", "rail");
-	public static final RetroIdentifier STAIRS = new RetroIdentifier("minecraft", "stairs");
-	public static final RetroIdentifier FENCE = new RetroIdentifier("minecraft", "fence");
-	public static final RetroIdentifier LEVER = new RetroIdentifier("minecraft", "lever");
-	public static final RetroIdentifier CACTUS = new RetroIdentifier("minecraft", "cactus");
-	public static final RetroIdentifier BED = new RetroIdentifier("minecraft", "bed");
-	public static final RetroIdentifier REPEATER = new RetroIdentifier("minecraft", "repeater");
-	public static final RetroIdentifier PISTON_BASE = new RetroIdentifier("minecraft", "piston_base");
-	public static final RetroIdentifier PISTON_HEAD = new RetroIdentifier("minecraft", "piston_head");
-
 	private static final Map<RetroIdentifier, Integer> idMap = new LinkedHashMap<>();
 	private static final Map<Integer, CustomBlockRenderer> renderers = new LinkedHashMap<>();
 	private static int nextId = 18;
 
 	static {
-		idMap.put(BLOCK, 0);
-		idMap.put(CROSS, 1);
-		idMap.put(TORCH, 2);
-		idMap.put(FIRE, 3);
-		idMap.put(LIQUID, 4);
-		idMap.put(REDSTONE_WIRE, 5);
-		idMap.put(PLANT, 6);
-		idMap.put(DOOR, 7);
-		idMap.put(LADDER, 8);
-		idMap.put(RAIL, 9);
-		idMap.put(STAIRS, 10);
-		idMap.put(FENCE, 11);
-		idMap.put(LEVER, 12);
-		idMap.put(CACTUS, 13);
-		idMap.put(BED, 14);
-		idMap.put(REPEATER, 15);
-		idMap.put(PISTON_BASE, 16);
-		idMap.put(PISTON_HEAD, 17);
+		idMap.put(RenderTypes.BLOCK, 0);
+		idMap.put(RenderTypes.CROSS, 1);
+		idMap.put(RenderTypes.TORCH, 2);
+		idMap.put(RenderTypes.FIRE, 3);
+		idMap.put(RenderTypes.LIQUID, 4);
+		idMap.put(RenderTypes.REDSTONE_WIRE, 5);
+		idMap.put(RenderTypes.PLANT, 6);
+		idMap.put(RenderTypes.DOOR, 7);
+		idMap.put(RenderTypes.LADDER, 8);
+		idMap.put(RenderTypes.RAIL, 9);
+		idMap.put(RenderTypes.STAIRS, 10);
+		idMap.put(RenderTypes.FENCE, 11);
+		idMap.put(RenderTypes.LEVER, 12);
+		idMap.put(RenderTypes.CACTUS, 13);
+		idMap.put(RenderTypes.BED, 14);
+		idMap.put(RenderTypes.REPEATER, 15);
+		idMap.put(RenderTypes.PISTON_BASE, 16);
+		idMap.put(RenderTypes.PISTON_HEAD, 17);
 	}
 
 	private RenderType() {}
@@ -78,7 +60,7 @@ public final class RenderType {
 	 *
 	 * @param id       unique identifier for the render type
 	 * @param renderer the rendering implementation
-	 * @return the identifier (for use with {@link RetroBlock#setRenderType})
+	 * @return the identifier (for use with {@link RetroBlockAccess#retroapi$setRenderType})
 	 */
 	public static RetroIdentifier register(RetroIdentifier id, CustomBlockRenderer renderer) {
 		if (idMap.containsKey(id)) {

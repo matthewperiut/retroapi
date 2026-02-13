@@ -81,6 +81,10 @@ dependencies {
 
 	modImplementation "com.periut:starac:${project.starac_version}"
 
+	// Netty is required by OSL networking but not bundled with Minecraft b1.7.3
+	include "io.netty:netty-buffer:4.1.77.Final"
+	include "io.netty:netty-common:4.1.77.Final"
+
 	modCompileOnly("net.modificationstation:StationAPI:${project.stapi_version}")
 
 //	modLocalRuntime("com.periut:retrocommands:${project.retrocommands_version}") {

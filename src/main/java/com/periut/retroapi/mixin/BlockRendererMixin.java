@@ -2,6 +2,7 @@ package com.periut.retroapi.mixin;
 
 import com.periut.retroapi.api.BlockRenderContext;
 import com.periut.retroapi.api.CustomBlockRenderer;
+import com.periut.retroapi.api.RetroBlockRendererAccess;
 import com.periut.retroapi.api.RenderType;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
