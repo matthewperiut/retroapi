@@ -55,65 +55,110 @@ Use `jar tf` on it to verify class/package names before writing imports.
 
 ```
 com.periut.retroapi/
-├── RetroAPI.java              # init entrypoint — fires registration events
-├── RetroAPIClient.java        # client-init — ID sync + chunk extended receiver
-├── RetroAPIServer.java        # server-init — sends ID sync on player join
-├── RetroAPINetworking.java    # Channel declarations (id_sync, chunk_ext)
+├── RetroAPI.java                    # init entrypoint — fires registration events
 │
-├── api/                       # Public API for mod authors
-│   ├── RetroBlockAccess.java  # Duck interface on Block (create, register, texture, bounds)
-│   ├── RetroItemAccess.java   # Duck interface on Item
-│   ├── RetroIdentifier.java   # record(namespace, path) — "mod:name"
-│   ├── RetroTexture.java      # Mutable sprite ID wrapper
-│   ├── RetroTextures.java     # Texture registration and atlas tracking
-│   ├── RenderType.java        # Custom block render type registry
-│   ├── RenderTypes.java       # Vanilla render type constants
-│   ├── CustomBlockRenderer.java
-│   ├── BlockRenderContext.java # Context for custom renderers (faces, AO, lighting)
-│   └── event/                 # Registration callbacks
+├── client/                          # Client-side code
+│   ├── RetroAPIClient.java          # client-init — ID sync + chunk extended receiver
+│   ├── FurnaceBlockEntityProxy.java
+│   ├── texture/
+│   │   └── AtlasExpander.java       # Composites custom textures into terrain/item atlases
+│   └── screen/
+│       └── StationAPIWorldScreen.java  # Error screen for StationAPI worlds
 │
-├── registry/                  # ID management
-│   ├── RetroRegistry.java     # Central list of BlockRegistration/ItemRegistration
-│   ├── BlockRegistration.java # Holds block + blockItem + RetroIdentifier
-│   ├── ItemRegistration.java  # Holds item + RetroIdentifier
-│   ├── IdAssigner.java        # Assigns/remaps numeric IDs, grows arrays if needed
-│   └── IdMap.java             # NBT persistence for id_map.dat
+├── server/
+│   └── RetroAPIServer.java          # server-init — sends ID sync on player join
 │
-├── storage/                   # Extended block storage (unlimited blocks beyond 256)
-│   ├── ChunkExtendedBlocks.java   # Sparse HashMap<index, blockId> per chunk
-│   ├── ExtendedBlocksAccess.java  # Duck interface on WorldChunk
-│   ├── RegionSidecar.java         # Per-region sidecar file (retroapi/chunks/r.X.Z.dat)
-│   ├── SidecarManager.java        # Cached region sidecar access
-│   └── BackupManager.java         # Date-stamped backups before conversions
+├── network/                         # Networking
+│   ├── RetroAPINetworking.java      # Channel declarations (id_sync, chunk_ext)
+│   ├── BlocksUpdatePacketAccess.java
+│   └── WorldChunkPacketAccess.java
 │
-├── mixin/                     # All Sponge mixins
-│   ├── BlockArrayExpandMixin.java  # Expands Block.BY_ID etc from 256→4096 at clinit
-│   ├── BlockMixin.java             # Injects RetroBlockAccess onto Block
-│   ├── ItemMixin.java              # Injects RetroItemAccess onto Item
-│   ├── WorldChunkMixin.java        # Overlays get/setBlock with extended storage
-│   ├── ChunkStorageMixin.java      # Hooks AlphaChunkStorage save/load for sidecars
-│   ├── ChunkSendMixin.java         # Hooks ServerPlayNetworkHandler.sendPacket for chunk sync
-│   ├── ItemStackMixin.java         # Embeds string IDs in ItemStack NBT
-│   ├── AlphaWorldStorageMixin.java # Inits SidecarManager + ID assignment on world load
-│   ├── BlockRendererMixin.java     # Custom render types + smooth lighting
-│   ├── TextureManagerMixin.java    # Atlas expansion (non-StationAPI)
-│   ├── MinecraftMixin.java         # StationAPI world detection
-│   ├── RetroAPIMixinPlugin.java    # Conditionally disables atlas mixins when StationAPI present
-│   └── stationapi/                 # StationAPI-specific mixins (separate config)
+├── register/                        # Public API for mod authors
+│   ├── RetroIdentifier.java         # record(namespace, path) — "mod:name"
+│   ├── block/
+│   │   ├── RetroBlockAccess.java    # Duck interface on Block (create, register, texture, bounds)
+│   │   ├── BlockActivatedHandler.java
+│   │   ├── RetroTexture.java        # Mutable sprite ID wrapper
+│   │   ├── RetroTextures.java       # Texture registration and atlas tracking
+│   │   └── event/
+│   │       └── BlockRegistrationCallback.java
+│   ├── item/
+│   │   ├── RetroItemAccess.java     # Duck interface on Item
+│   │   └── event/
+│   │       └── ItemRegistrationCallback.java
+│   ├── blockentity/
+│   │   ├── RetroBlockEntityType.java
+│   │   ├── SyncField.java
+│   │   └── RetroMenu.java
+│   └── rendertype/
+│       ├── RenderType.java          # Custom block render type registry
+│       ├── RenderTypes.java         # Vanilla render type constants
+│       ├── CustomBlockRenderer.java
+│       ├── BlockRenderContext.java
+│       └── RetroBlockRendererAccess.java
 │
-├── compat/                    # StationAPI bridge
+├── registry/                        # ID management
+│   ├── RetroRegistry.java
+│   ├── BlockRegistration.java
+│   ├── ItemRegistration.java
+│   ├── IdAssigner.java
+│   └── IdMap.java
+│
+├── storage/                         # Extended block storage (unlimited blocks beyond 256)
+│   ├── ChunkExtendedBlocks.java
+│   ├── ExtendedBlocksAccess.java
+│   ├── RegionSidecar.java
+│   ├── SidecarManager.java
+│   ├── BackupManager.java
+│   └── InventorySidecar.java
+│
+├── mixin/
+│   ├── RetroAPIMixinPlugin.java     # Conditionally disables mixins when StationAPI present
+│   ├── register/                    # Block/item/BE registration mixins
+│   │   ├── BlockArrayExpandMixin.java
+│   │   ├── BlockMixin.java
+│   │   ├── ItemMixin.java
+│   │   ├── ItemStackMixin.java
+│   │   └── BlockEntityAccessor.java
+│   ├── storage/                     # World/chunk persistence mixins
+│   │   ├── AlphaWorldStorageMixin.java
+│   │   ├── ChunkStorageMixin.java
+│   │   ├── WorldChunkMixin.java
+│   │   ├── WorldAccessor.java
+│   │   ├── WorldStorageAccessor.java
+│   │   └── RegionWorldStorageSourceAccessor.java
+│   ├── network/                     # Packet serialization + server networking
+│   │   ├── ChunkSendMixin.java
+│   │   ├── BlockUpdatePacketMixin.java
+│   │   ├── BlocksUpdatePacketMixin.java
+│   │   ├── WorldChunkPacketMixin.java
+│   │   └── ServerPlayerEntityAccessor.java
+│   ├── client/                      # Client-side mixins
+│   │   ├── BlockRendererMixin.java
+│   │   ├── ClientNetworkHandlerMixin.java
+│   │   ├── MinecraftMixin.java
+│   │   ├── MinecraftAccessor.java
+│   │   ├── PlayerRendererMixin.java
+│   │   ├── LanguageAccessor.java
+│   │   └── atlas/                   # Atlas/texture mixins (disabled with StationAPI)
+│   │       ├── AchievementsScreenMixin.java
+│   │       ├── BlockRendererAtlasMixin.java
+│   │       ├── BlockParticleMixin.java
+│   │       ├── ItemInHandRendererMixin.java
+│   │       ├── ItemRendererMixin.java
+│   │       └── TextureManagerMixin.java
+│   └── stationapi/                  # StationAPI-specific mixins (separate config)
+│       ├── FlattenedWorldStorageMixin.java
+│       └── ModNioResourcePackMixin.java
+│
+├── compat/                          # StationAPI bridge
 │   ├── StationAPICompat.java
 │   ├── StationAPIRegistryForwarder.java
-│   └── WorldConversionHelper.java
+│   ├── WorldConversionHelper.java
+│   └── WorldConversionProcessor.java
 │
-├── texture/
-│   └── AtlasExpander.java     # Composites custom textures into terrain/item atlases
-│
-├── lang/
-│   └── LangLoader.java        # Loads translations from mod assets
-│
-└── screen/
-    └── StationAPIWorldScreen.java  # Error screen for StationAPI worlds
+└── lang/
+    └── LangLoader.java              # Loads translations from mod assets
 ```
 
 ## Key Architecture Concepts

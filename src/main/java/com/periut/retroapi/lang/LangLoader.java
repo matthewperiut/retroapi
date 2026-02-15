@@ -1,6 +1,6 @@
 package com.periut.retroapi.lang;
 
-import com.periut.retroapi.mixin.LanguageAccessor;
+import com.periut.retroapi.mixin.client.LanguageAccessor;
 import com.periut.retroapi.registry.BlockRegistration;
 import com.periut.retroapi.registry.ItemRegistration;
 import com.periut.retroapi.registry.RetroRegistry;

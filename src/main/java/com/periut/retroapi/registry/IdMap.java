@@ -1,6 +1,6 @@
 package com.periut.retroapi.registry;
 
-import com.periut.retroapi.api.RetroIdentifier;
+import com.periut.retroapi.register.RetroIdentifier;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import org.apache.logging.log4j.LogManager;

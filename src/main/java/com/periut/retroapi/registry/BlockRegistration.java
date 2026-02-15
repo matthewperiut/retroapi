@@ -1,6 +1,6 @@
 package com.periut.retroapi.registry;
 
-import com.periut.retroapi.api.RetroIdentifier;
+import com.periut.retroapi.register.RetroIdentifier;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 

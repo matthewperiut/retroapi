@@ -1,9 +1,9 @@
 package com.periut.retroapi.testmod;
 
-import com.periut.retroapi.api.RetroBlockAccess;
-import com.periut.retroapi.api.RetroIdentifier;
-import com.periut.retroapi.api.RetroTexture;
-import com.periut.retroapi.api.RetroTextures;
+import com.periut.retroapi.register.block.RetroBlockAccess;
+import com.periut.retroapi.register.RetroIdentifier;
+import com.periut.retroapi.register.block.RetroTexture;
+import com.periut.retroapi.register.block.RetroTextures;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 

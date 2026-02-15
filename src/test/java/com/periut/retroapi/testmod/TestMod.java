@@ -1,6 +1,12 @@
 package com.periut.retroapi.testmod;
 
-import com.periut.retroapi.api.*;
+import com.periut.retroapi.register.RetroIdentifier;
+import com.periut.retroapi.register.block.RetroBlockAccess;
+import com.periut.retroapi.register.blockentity.RetroBlockEntityType;
+import com.periut.retroapi.register.blockentity.RetroMenu;
+import com.periut.retroapi.register.item.RetroItemAccess;
+import com.periut.retroapi.register.rendertype.RenderType;
+import com.periut.retroapi.register.rendertype.RenderTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.material.Material;

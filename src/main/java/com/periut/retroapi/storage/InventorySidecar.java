@@ -1,6 +1,6 @@
 package com.periut.retroapi.storage;
 
-import com.periut.retroapi.api.RetroIdentifier;
+import com.periut.retroapi.register.RetroIdentifier;
 import com.periut.retroapi.registry.BlockRegistration;
 import com.periut.retroapi.registry.ItemRegistration;
 import com.periut.retroapi.registry.RetroRegistry;

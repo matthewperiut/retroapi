@@ -1,6 +1,6 @@
 package com.periut.retroapi.compat;
 
-import com.periut.retroapi.api.RetroIdentifier;
+import com.periut.retroapi.register.RetroIdentifier;
 import com.periut.retroapi.registry.IdMap;
 import net.modificationstation.stationapi.api.vanillafix.datafixer.schema.StationFlatteningItemStackSchema;
 import org.apache.logging.log4j.LogManager;

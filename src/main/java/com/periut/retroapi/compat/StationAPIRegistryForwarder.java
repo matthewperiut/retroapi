@@ -1,6 +1,6 @@
 package com.periut.retroapi.compat;
 
-import com.periut.retroapi.api.RetroTextures;
+import com.periut.retroapi.register.block.RetroTextures;
 import net.mine_diver.unsafeevents.listener.EventListener;
 import net.modificationstation.stationapi.api.client.event.texture.TextureRegisterEvent;
 import net.modificationstation.stationapi.api.mod.entrypoint.Entrypoint;

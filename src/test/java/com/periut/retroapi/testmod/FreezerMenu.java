@@ -1,7 +1,7 @@
 package com.periut.retroapi.testmod;
 
-import com.periut.retroapi.api.RetroMenu;
-import com.periut.retroapi.api.SyncField;
+import com.periut.retroapi.register.blockentity.RetroMenu;
+import com.periut.retroapi.register.blockentity.SyncField;
 import net.minecraft.entity.mob.player.PlayerEntity;
 import net.minecraft.entity.mob.player.PlayerInventory;
 import net.minecraft.inventory.slot.FurnaceResultSlot;
@@ -16,7 +16,7 @@ public class FreezerMenu extends RetroMenu {
 	@SyncField("fuelTime")
 	public int fuelTime;
 
-	@SyncField("totalFuelTime")
+	@SyncField("totalFu$elTime")
 	public int totalFuelTime;
 
 	public FreezerMenu(PlayerInventory playerInv, FreezerBlockEntity freezer) {

@@ -10,21 +10,21 @@ import java.util.Set;
 
 public class RetroAPIMixinPlugin implements IMixinConfigPlugin {
 	private static final Set<String> ATLAS_MIXINS = Set.of(
-		"com.periut.retroapi.mixin.AchievementsScreenMixin",
-		"com.periut.retroapi.mixin.BlockRendererAtlasMixin",
-		"com.periut.retroapi.mixin.BlockParticleMixin",
-		"com.periut.retroapi.mixin.ItemInHandRendererMixin",
-		"com.periut.retroapi.mixin.ItemRendererMixin",
-		"com.periut.retroapi.mixin.TextureManagerMixin"
+		"com.periut.retroapi.mixin.client.atlas.AchievementsScreenMixin",
+		"com.periut.retroapi.mixin.client.atlas.BlockRendererAtlasMixin",
+		"com.periut.retroapi.mixin.client.atlas.BlockParticleMixin",
+		"com.periut.retroapi.mixin.client.atlas.ItemInHandRendererMixin",
+		"com.periut.retroapi.mixin.client.atlas.ItemRendererMixin",
+		"com.periut.retroapi.mixin.client.atlas.TextureManagerMixin"
 	);
 
 	private static final Set<String> STATIONAPI_DISABLED_MIXINS = Set.of(
-		"com.periut.retroapi.mixin.ItemStackMixin",
-		"com.periut.retroapi.mixin.BlockUpdatePacketMixin",
-		"com.periut.retroapi.mixin.BlocksUpdatePacketMixin",
-		"com.periut.retroapi.mixin.WorldChunkPacketMixin",
-		"com.periut.retroapi.mixin.ChunkSendMixin",
-		"com.periut.retroapi.mixin.ClientNetworkHandlerMixin"
+		"com.periut.retroapi.mixin.register.ItemStackMixin",
+		"com.periut.retroapi.mixin.network.BlockUpdatePacketMixin",
+		"com.periut.retroapi.mixin.network.BlocksUpdatePacketMixin",
+		"com.periut.retroapi.mixin.network.WorldChunkPacketMixin",
+		"com.periut.retroapi.mixin.network.ChunkSendMixin",
+		"com.periut.retroapi.mixin.client.ClientNetworkHandlerMixin"
 	);
 
 	private boolean stationAPIPresent;

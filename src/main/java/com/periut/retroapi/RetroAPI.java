@@ -1,7 +1,7 @@
 package com.periut.retroapi;
 
-import com.periut.retroapi.api.event.BlockRegistrationCallback;
-import com.periut.retroapi.api.event.ItemRegistrationCallback;
+import com.periut.retroapi.register.block.event.BlockRegistrationCallback;
+import com.periut.retroapi.register.item.event.ItemRegistrationCallback;
 import com.periut.retroapi.compat.StationAPICompat;
 import com.periut.retroapi.registry.RetroRegistry;
 import net.fabricmc.loader.api.FabricLoader;

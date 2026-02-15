@@ -24,6 +24,10 @@ mutable field net/minecraft/block/Block LIGHT [I
 accessible field net/minecraft/block/Block UPDATE_CLIENTS [Z
 mutable field net/minecraft/block/Block UPDATE_CLIENTS [Z
 
+# Stats arrays (for expansion beyond 256)
+accessible field net/minecraft/stat/Stats BLOCKS_MINED [Lnet/minecraft/stat/Stat;
+mutable field net/minecraft/stat/Stats BLOCKS_MINED [Lnet/minecraft/stat/Stat;
+
 # Block constructor
 accessible method net/minecraft/block/Block <init> (ILnet/minecraft/block/material/Material;)V
 

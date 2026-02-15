@@ -58,6 +58,8 @@ public class GiveItemsMixin {
 				retroapi_test$safeAddItem(inventory, new ItemStack(TestMod.TEST_ITEM, 64));
 			}
 
+			retroapi_test$safeAddItem(inventory, new ItemStack(Item.DIAMOND_PICKAXE, 1));
+
 			// Spawn chests filled with the 200 numbered blocks
 			int px = (int) self.x;
 			int py = (int) self.y;

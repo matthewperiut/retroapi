@@ -14,10 +14,10 @@
 			"com.periut.retroapi.RetroAPI"
 		],
 		"client-init": [
-			"com.periut.retroapi.RetroAPIClient"
+			"com.periut.retroapi.client.RetroAPIClient"
 		],
 		"server-init": [
-			"com.periut.retroapi.RetroAPIServer"
+			"com.periut.retroapi.server.RetroAPIServer"
 		],
 		"stationapi:event_bus": [
 			"com.periut.retroapi.compat.StationAPIRegistryForwarder"
