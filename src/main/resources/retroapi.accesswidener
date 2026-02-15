@@ -1,0 +1,30 @@
+accessWidener v2 named
+
+# Block fields
+accessible field net/minecraft/block/Block id I
+mutable field net/minecraft/block/Block id I
+accessible field net/minecraft/block/Block key Ljava/lang/String;
+mutable field net/minecraft/block/Block key Ljava/lang/String;
+
+# Block constructor
+accessible method net/minecraft/block/Block <init> (ILnet/minecraft/block/material/Material;)V
+
+# Block protected methods
+accessible method net/minecraft/block/Block setSounds (Lnet/minecraft/block/Block$Sounds;)Lnet/minecraft/block/Block;
+accessible method net/minecraft/block/Block setStrength (F)Lnet/minecraft/block/Block;
+accessible method net/minecraft/block/Block setBlastResistance (F)Lnet/minecraft/block/Block;
+accessible method net/minecraft/block/Block setLight (F)Lnet/minecraft/block/Block;
+accessible method net/minecraft/block/Block setOpacity (I)Lnet/minecraft/block/Block;
+
+# Item fields
+accessible field net/minecraft/item/Item id I
+mutable field net/minecraft/item/Item id I
+accessible field net/minecraft/item/Item key Ljava/lang/String;
+mutable field net/minecraft/item/Item key Ljava/lang/String;
+
+# Item constructor
+accessible method net/minecraft/item/Item <init> (I)V
+
+# BlockItem fields
+accessible field net/minecraft/item/BlockItem block I
+mutable field net/minecraft/item/BlockItem block I

@@ -43,6 +43,7 @@ sourceSets {
 }
 
 loom {
+	accessWidenerPath = file("src/main/resources/retroapi.accesswidener")
 	mods {
 		retroapi {
 			sourceSet sourceSets.main
@@ -87,9 +88,9 @@ dependencies {
 
 	modCompileOnly("net.modificationstation:StationAPI:${project.stapi_version}")
 
-//	modLocalRuntime("com.periut:retrocommands:${project.retrocommands_version}") {
-//		transitive = false
-//	}
+	modLocalRuntime("com.periut:retrocommands:${project.retrocommands_version}") {
+		transitive = false
+	}
 
 }
 // Exclude Legacy Fabric LWJGL 2 wrapper (starac provides LWJGL 3)

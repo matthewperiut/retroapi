@@ -19,11 +19,15 @@ public class AlphaWorldStorageMixin {
 
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void retroapi$assignIds(CallbackInfo ci) {
-		if (FabricLoader.getInstance().isModLoaded("stationapi")) return;
 		if (RetroRegistry.getBlocks().isEmpty() && RetroRegistry.getItems().isEmpty()) return;
 
 		File worldDir = ((WorldStorageAccessor) (Object) this).retroapi$getDir();
-		LOGGER.info("Assigning IDs for world: {}", worldDir);
-		IdAssigner.assignIds(worldDir);
+		if (FabricLoader.getInstance().isModLoaded("stationapi")) {
+			LOGGER.info("StationAPI present, saving current ID map for world: {}", worldDir);
+			IdAssigner.saveCurrentIds(worldDir);
+		} else {
+			LOGGER.info("Assigning IDs for world: {}", worldDir);
+			IdAssigner.assignIds(worldDir);
+		}
 	}
 }

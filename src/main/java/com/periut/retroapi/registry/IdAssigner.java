@@ -1,9 +1,6 @@
 package com.periut.retroapi.registry;
 
 import com.periut.retroapi.api.RetroIdentifier;
-import com.periut.retroapi.mixin.BlockAccessor;
-import com.periut.retroapi.mixin.BlockItemAccessor;
-import com.periut.retroapi.mixin.ItemAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -28,6 +25,22 @@ public class IdAssigner {
 		assignItemIds(idMap);
 
 		idMap.save(idMapFile);
+	}
+
+	public static void saveCurrentIds(File worldDir) {
+		File idMapFile = new File(worldDir, "retroapi/id_map.dat");
+		IdMap idMap = new IdMap();
+
+		for (BlockRegistration reg : RetroRegistry.getBlocks()) {
+			idMap.putBlockId(reg.getId(), reg.getBlock().id);
+		}
+		for (ItemRegistration reg : RetroRegistry.getItems()) {
+			idMap.putItemId(reg.getId(), reg.getItem().id);
+		}
+
+		idMap.save(idMapFile);
+		LOGGER.info("Saved current ID map for {} blocks and {} items",
+			RetroRegistry.getBlocks().size(), RetroRegistry.getItems().size());
 	}
 
 	private static void assignBlockIds(IdMap idMap) {
@@ -57,7 +70,7 @@ public class IdAssigner {
 
 		for (BlockRegistration reg : RetroRegistry.getBlocks()) {
 			Block block = reg.getBlock();
-			int currentId = ((BlockAccessor) block).retroapi$getId();
+			int currentId = block.id;
 			Integer mappedId = idMap.getBlockId(reg.getId());
 
 			int targetId;
@@ -104,7 +117,7 @@ public class IdAssigner {
 
 		for (ItemRegistration reg : RetroRegistry.getItems()) {
 			Item item = reg.getItem();
-			int currentId = ((ItemAccessor) item).retroapi$getId();
+			int currentId = item.id;
 			Integer mappedId = idMap.getItemId(reg.getId());
 
 			int targetId;
@@ -180,7 +193,7 @@ public class IdAssigner {
 		Block.LIGHT[newId] = lightValue;
 
 		// Update the block's id field
-		((BlockAccessor) block).retroapi$setId(newId);
+		block.id = newId;
 
 		// Remap the corresponding BlockItem in Item.BY_ID
 		Item[] itemById = Item.BY_ID;
@@ -188,8 +201,8 @@ public class IdAssigner {
 			BlockItem blockItem = (BlockItem) itemById[oldId];
 			itemById[oldId] = null;
 			itemById[newId] = blockItem;
-			((ItemAccessor) blockItem).retroapi$setId(newId);
-			((BlockItemAccessor) blockItem).retroapi$setBlock(newId);
+			blockItem.id = newId;
+			((BlockItem) blockItem).block = newId;
 		}
 
 		LOGGER.debug("Remapped block from {} to {}", oldId, newId);
@@ -207,7 +220,7 @@ public class IdAssigner {
 		byId[newId] = item;
 
 		// Update the item's id field
-		((ItemAccessor) item).retroapi$setId(newId);
+		item.id = newId;
 
 		LOGGER.debug("Remapped item from {} to {}", oldId, newId);
 	}
@@ -231,7 +244,7 @@ public class IdAssigner {
 			}
 
 			Block block = reg.getBlock();
-			int currentId = ((BlockAccessor) block).retroapi$getId();
+			int currentId = block.id;
 			if (currentId != numericId) {
 				remapBlock(block, currentId, numericId);
 				LOGGER.info("Synced block {} -> ID {} (was {})", identifier, numericId, currentId);
@@ -256,7 +269,7 @@ public class IdAssigner {
 			}
 
 			Item item = reg.getItem();
-			int currentId = ((ItemAccessor) item).retroapi$getId();
+			int currentId = item.id;
 			if (currentId != numericId) {
 				remapItem(item, currentId, numericId);
 				LOGGER.info("Synced item {} -> ID {} (was {})", identifier, numericId, currentId);

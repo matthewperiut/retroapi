@@ -1,7 +1,5 @@
 package com.periut.retroapi;
 
-import com.periut.retroapi.mixin.BlockAccessor;
-import com.periut.retroapi.mixin.ItemAccessor;
 import com.periut.retroapi.registry.BlockRegistration;
 import com.periut.retroapi.registry.ItemRegistration;
 import com.periut.retroapi.registry.RetroRegistry;
@@ -23,13 +21,13 @@ public class RetroAPIServer implements ServerModInitializer {
 					buffer.writeVarInt(RetroRegistry.getBlocks().size());
 					for (BlockRegistration reg : RetroRegistry.getBlocks()) {
 						buffer.writeString(reg.getId().toString());
-						buffer.writeVarInt(((BlockAccessor) reg.getBlock()).retroapi$getId());
+						buffer.writeVarInt(reg.getBlock().id);
 					}
 
 					buffer.writeVarInt(RetroRegistry.getItems().size());
 					for (ItemRegistration reg : RetroRegistry.getItems()) {
 						buffer.writeString(reg.getId().toString());
-						buffer.writeVarInt(((ItemAccessor) reg.getItem()).retroapi$getId());
+						buffer.writeVarInt(reg.getItem().id);
 					}
 				});
 			});

@@ -23,6 +23,7 @@
 			"com.periut.retroapi.compat.StationAPIRegistryForwarder"
 		]
 	},
+	"accessWidener": "retroapi.accesswidener",
 	"mixins": [
 		"retroapi.mixins.json",
 		"retroapi.stationapi.mixins.json"

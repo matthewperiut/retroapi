@@ -1,6 +1,5 @@
 package com.periut.retroapi.api;
 
-import com.periut.retroapi.mixin.ItemAccessor;
 import net.minecraft.item.Item;
 
 /**
@@ -26,7 +25,7 @@ public interface RetroItemAccess {
 	 * @return a new Item instance with RetroAPI functionality available via cast
 	 */
 	static Item create() {
-		return ItemAccessor.retroapi$create(allocatePlaceholderItemId());
+		return new Item(allocatePlaceholderItemId());
 	}
 
 	/**

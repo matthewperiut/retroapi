@@ -10,7 +10,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.world.WorldView;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -22,49 +21,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Block.class)
 public abstract class BlockMixin implements RetroBlockAccess {
 
-	@Shadow @Final public int id;
+	@Shadow public int id;
 	@Shadow public int sprite;
-
-	@Shadow protected abstract Block setSounds(Block.Sounds sounds);
-	@Shadow protected abstract Block setStrength(float strength);
-	@Shadow protected abstract Block setBlastResistance(float resistance);
-	@Shadow protected abstract Block setLight(float light);
-	@Shadow protected abstract Block setOpacity(int opacity);
 
 	@Unique private int retroapi$renderType = -1;
 	@Unique private boolean retroapi$solidRenderSet = false;
 	@Unique private boolean retroapi$solidRender = true;
 	@Unique private float[] retroapi$customBounds = null;
-
-	@Override
-	public RetroBlockAccess retroapi$setSounds(Block.Sounds sounds) {
-		this.setSounds(sounds);
-		return this;
-	}
-
-	@Override
-	public RetroBlockAccess retroapi$setStrength(float strength) {
-		this.setStrength(strength);
-		return this;
-	}
-
-	@Override
-	public RetroBlockAccess retroapi$setBlastResistance(float resistance) {
-		this.setBlastResistance(resistance);
-		return this;
-	}
-
-	@Override
-	public RetroBlockAccess retroapi$setLight(float light) {
-		this.setLight(light);
-		return this;
-	}
-
-	@Override
-	public RetroBlockAccess retroapi$setOpacity(int opacity) {
-		this.setOpacity(opacity);
-		return this;
-	}
 
 	@Override
 	public RetroBlockAccess retroapi$setSolidRender(boolean solid) {
@@ -83,7 +46,7 @@ public abstract class BlockMixin implements RetroBlockAccess {
 	}
 
 	@Override
-	public RetroBlockAccess retroapi$setRenderType(RetroIdentifier renderTypeId) {
+	public RetroBlockAccess setRenderType(RetroIdentifier renderTypeId) {
 		this.retroapi$renderType = RenderType.resolve(renderTypeId);
 		return this;
 	}
@@ -102,7 +65,7 @@ public abstract class BlockMixin implements RetroBlockAccess {
 	}
 
 	@Override
-	public Block retroapi$register(RetroIdentifier id) {
+	public Block register(RetroIdentifier id) {
 		Block self = (Block) (Object) this;
 		boolean hasStationAPI = FabricLoader.getInstance().isModLoaded("stationapi");
 

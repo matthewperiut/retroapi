@@ -50,6 +50,8 @@ public class BlockRendererMixin implements RetroBlockRendererAccess {
 		this.ambientOcclusion = false;
 	}
 
+	// --- Custom render type handling ---
+
 	@Inject(method = "tesselateInWorld", at = @At("HEAD"), cancellable = true)
 	private void retroapi$handleCustomRenderType(Block block, int x, int y, int z, CallbackInfoReturnable<Boolean> cir) {
 		int type = block.getRenderType();

@@ -1,7 +1,6 @@
 package com.periut.retroapi.mixin;
 
 import com.periut.retroapi.texture.AtlasExpander;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.render.texture.TextureManager;
 import net.minecraft.client.resource.pack.TexturePack;
 import net.minecraft.client.resource.pack.TexturePacks;
@@ -32,10 +31,6 @@ public abstract class TextureManagerMixin {
 
 	@Inject(method = "load(Ljava/lang/String;)I", at = @At("RETURN"))
 	private void retroapi$onLoadTexture(String path, CallbackInfoReturnable<Integer> cir) {
-		if (FabricLoader.getInstance().isModLoaded("stationapi")) {
-			return;
-		}
-
 		int textureId = cir.getReturnValueI();
 
 		if ("/terrain.png".equals(path) && retroapi$terrainTextureId == -1) {
@@ -49,12 +44,6 @@ public abstract class TextureManagerMixin {
 
 	@Inject(method = "reload", at = @At("RETURN"))
 	private void retroapi$onReload(CallbackInfo ci) {
-		if (FabricLoader.getInstance().isModLoaded("stationapi")) {
-			return;
-		}
-
-		// After reload, vanilla re-uploads all textures from disk, overwriting our composited versions.
-		// Re-composite our textures on top.
 		if (retroapi$terrainTextureId != -1) {
 			retroapi$compositeAtlas("/terrain.png", retroapi$terrainTextureId, true);
 		}

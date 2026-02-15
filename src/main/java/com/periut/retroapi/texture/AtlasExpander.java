@@ -2,7 +2,6 @@ package com.periut.retroapi.texture;
 
 import com.periut.retroapi.api.RetroTexture;
 import com.periut.retroapi.api.RetroTextures;
-import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,11 +15,17 @@ public class AtlasExpander {
 	private static final Logger LOGGER = LogManager.getLogger("RetroAPI/AtlasExpander");
 	private static final int ATLAS_COLUMNS = 16;
 
-	public static BufferedImage expandTerrainAtlas(BufferedImage original) {
-		if (FabricLoader.getInstance().isModLoaded("stationapi")) {
-			return original;
-		}
+	/** Current terrain atlas size (width = height, always square, power of 2). */
+	public static int terrainAtlasSize = 256;
+	/** Current item atlas size (width = height, always square, power of 2). */
+	public static int itemAtlasSize = 256;
 
+	private static int nextPowerOfTwo(int value) {
+		if (value <= 256) return 256;
+		return Integer.highestOneBit(value - 1) << 1;
+	}
+
+	public static BufferedImage expandTerrainAtlas(BufferedImage original) {
 		List<RetroTexture> textures = RetroTextures.getTerrainTextures();
 		if (textures.isEmpty()) {
 			return original;
@@ -30,9 +35,16 @@ public class AtlasExpander {
 		int originalRows = original.getHeight() / spriteSize;
 
 		int maxSlot = textures.stream().mapToInt(t -> t.id).max().orElse(0);
-		int neededRows = Math.max(originalRows, (maxSlot + ATLAS_COLUMNS) / ATLAS_COLUMNS);
+		int neededRows = Math.max(originalRows, (maxSlot / ATLAS_COLUMNS) + 1);
 
-		BufferedImage atlas = new BufferedImage(original.getWidth(), neededRows * spriteSize, BufferedImage.TYPE_INT_ARGB);
+		int neededWidth = ATLAS_COLUMNS * spriteSize;
+		int neededHeight = neededRows * spriteSize;
+		int atlasSize = nextPowerOfTwo(Math.max(neededWidth, neededHeight));
+		terrainAtlasSize = atlasSize;
+
+		LOGGER.info("Expanding terrain atlas to {}x{} (vanilla: {}x{})", atlasSize, atlasSize, original.getWidth(), original.getHeight());
+
+		BufferedImage atlas = new BufferedImage(atlasSize, atlasSize, BufferedImage.TYPE_INT_ARGB);
 		atlas.getGraphics().drawImage(original, 0, 0, null);
 
 		for (RetroTexture tex : textures) {
@@ -49,10 +61,6 @@ public class AtlasExpander {
 	}
 
 	public static BufferedImage expandItemAtlas(BufferedImage original) {
-		if (FabricLoader.getInstance().isModLoaded("stationapi")) {
-			return original;
-		}
-
 		List<RetroTexture> textures = RetroTextures.getItemTextures();
 		if (textures.isEmpty()) {
 			return original;
@@ -62,9 +70,16 @@ public class AtlasExpander {
 		int originalRows = original.getHeight() / spriteSize;
 
 		int maxSlot = textures.stream().mapToInt(t -> t.id).max().orElse(0);
-		int neededRows = Math.max(originalRows, (maxSlot + ATLAS_COLUMNS) / ATLAS_COLUMNS);
+		int neededRows = Math.max(originalRows, (maxSlot / ATLAS_COLUMNS) + 1);
 
-		BufferedImage atlas = new BufferedImage(original.getWidth(), neededRows * spriteSize, BufferedImage.TYPE_INT_ARGB);
+		int neededWidth = ATLAS_COLUMNS * spriteSize;
+		int neededHeight = neededRows * spriteSize;
+		int atlasSize = nextPowerOfTwo(Math.max(neededWidth, neededHeight));
+		itemAtlasSize = atlasSize;
+
+		LOGGER.info("Expanding item atlas to {}x{} (vanilla: {}x{})", atlasSize, atlasSize, original.getWidth(), original.getHeight());
+
+		BufferedImage atlas = new BufferedImage(atlasSize, atlasSize, BufferedImage.TYPE_INT_ARGB);
 		atlas.getGraphics().drawImage(original, 0, 0, null);
 
 		for (RetroTexture tex : textures) {

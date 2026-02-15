@@ -44,7 +44,7 @@ public abstract class MinecraftMixin extends Screen {
 				try (FileInputStream fis = new FileInputStream(levelDat)) {
 					NbtCompound root = NbtIo.readCompressed(fis);
 					NbtCompound data = root.getCompound("Data");
-					if (data.contains("stationapi:dimensions")) {
+					if (data.contains("stationapi:data_versions") && data.getCompound("stationapi:data_versions").contains("stationapi")) {
 						String name = info.getName();
 						if (name == null || name.trim().isEmpty()) {
 							name = "World " + (i + 1);
@@ -79,7 +79,7 @@ public abstract class MinecraftMixin extends Screen {
 			try (FileInputStream fis = new FileInputStream(levelDat)) {
 				NbtCompound root = NbtIo.readCompressed(fis);
 				NbtCompound data = root.getCompound("Data");
-				if (data.contains("stationapi:dimensions")) {
+				if (data.contains("stationapi:data_versions") && data.getCompound("stationapi:data_versions").contains("stationapi")) {
 					LOGGER.warn("StationAPI world detected without StationAPI: {}", worldDir);
 					this.minecraft.openScreen(new StationAPIWorldScreen());
 					ci.cancel();

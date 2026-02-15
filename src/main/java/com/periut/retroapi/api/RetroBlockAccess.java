@@ -1,6 +1,5 @@
 package com.periut.retroapi.api;
 
-import com.periut.retroapi.mixin.BlockAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 
@@ -10,21 +9,6 @@ import net.minecraft.block.material.Material;
  * All methods are no-ops by default until explicitly called.
  */
 public interface RetroBlockAccess {
-	/** Access-widening wrapper for {@link Block#setSounds}. */
-	RetroBlockAccess retroapi$setSounds(Block.Sounds sounds);
-
-	/** Access-widening wrapper for {@link Block#setStrength}. */
-	RetroBlockAccess retroapi$setStrength(float strength);
-
-	/** Access-widening wrapper for {@link Block#setBlastResistance}. */
-	RetroBlockAccess retroapi$setBlastResistance(float resistance);
-
-	/** Access-widening wrapper for {@link Block#setLight}. */
-	RetroBlockAccess retroapi$setLight(float light);
-
-	/** Access-widening wrapper for {@link Block#setOpacity}. */
-	RetroBlockAccess retroapi$setOpacity(int opacity);
-
 	/**
 	 * Mark this block as non-solid (not a full opaque cube).
 	 * This allows neighboring blocks to render their adjacent faces
@@ -44,7 +28,7 @@ public interface RetroBlockAccess {
 	 *
 	 * @see RenderType for vanilla and custom render type identifiers
 	 */
-	RetroBlockAccess retroapi$setRenderType(RetroIdentifier renderTypeId);
+	RetroBlockAccess setRenderType(RetroIdentifier renderTypeId);
 
 	/**
 	 * Set the sprite index for this block (used for particles and fallback rendering).
@@ -61,7 +45,7 @@ public interface RetroBlockAccess {
 	 * Register this block with RetroAPI.
 	 * Handles BlockItem creation, registry, and StationAPI compat.
 	 */
-	Block retroapi$register(RetroIdentifier id);
+	Block register(RetroIdentifier id);
 
 	/**
 	 * Create a new Block with an automatically allocated placeholder ID.
@@ -70,7 +54,7 @@ public interface RetroBlockAccess {
 	 * @return a new Block instance with RetroAPI functionality available via cast
 	 */
 	static Block create(Material material) {
-		return BlockAccessor.retroapi$create(allocatePlaceholderBlockId(), material);
+		return new Block(allocatePlaceholderBlockId(), material);
 	}
 
 	/**
