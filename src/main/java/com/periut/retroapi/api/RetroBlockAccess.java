@@ -77,11 +77,12 @@ public interface RetroBlockAccess {
 	static int allocatePlaceholderBlockId() {
 		Block[] byId = Block.BY_ID;
 		Item[] itemById = Item.BY_ID;
-		for (int i = 200; i < byId.length; i++) {
+		// Start at 256 to keep all RetroAPI blocks in extended storage range
+		for (int i = 256; i < byId.length; i++) {
 			if (byId[i] == null && (i >= itemById.length || itemById[i] == null)) {
 				return i;
 			}
 		}
-		throw new RuntimeException("No more placeholder block IDs available (0-" + (byId.length - 1) + " exhausted)");
+		throw new RuntimeException("No more placeholder block IDs available (256-" + (byId.length - 1) + " exhausted)");
 	}
 }

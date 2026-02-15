@@ -26,10 +26,22 @@ public class TestMod implements ModInitializer {
 			CrateBlockEntity.class, CrateBlockEntity::new
 		);
 
+	public static final RetroBlockEntityType<FreezerBlockEntity> FREEZER_TYPE =
+		new RetroBlockEntityType<>(
+			new RetroIdentifier("retroapi_test", "freezer"),
+			FreezerBlockEntity.class, FreezerBlockEntity::new
+		);
+
+	public static final int BLOCK_COUNT = 200;
+	public static final Block[] BLOCKS = new Block[BLOCK_COUNT];
+	public static final int ITEM_COUNT = 200;
+	public static final Item[] ITEMS = new Item[ITEM_COUNT];
+
 	public static Block TEST_BLOCK;
 	public static Block COLOR_BLOCK;
 	public static Block PIPE_BLOCK;
 	public static Block CRATE_BLOCK;
+	public static Block FREEZER_BLOCK;
 	public static Item TEST_ITEM;
 
 	@Override
@@ -73,13 +85,30 @@ public class TestMod implements ModInitializer {
 			.setActivated((world, x, y, z, player) -> {
 				BlockEntity be = world.getBlockEntity(x, y, z);
 				if (be instanceof CrateBlockEntity crate) {
-					player.openChestMenu(crate);
+					crate.openCount++;
+					RetroMenu.open(player, new CrateMenu(player.inventory, crate));
 				}
 				return true;
 			})
 			.retroapi$texture(new RetroIdentifier("retroapi_test", "crate"))
 			.register(new RetroIdentifier("retroapi_test", "crate"));
 		CRATE_BLOCK.setKey("crateBlock");
+
+		FREEZER_BLOCK = RetroBlockAccess.create(Material.STONE)
+			.setSounds(Block.STONE_SOUNDS)
+			.setStrength(3.5f);
+		((RetroBlockAccess) FREEZER_BLOCK)
+			.setBlockEntity(FREEZER_TYPE)
+			.setActivated((world, x, y, z, player) -> {
+				BlockEntity be = world.getBlockEntity(x, y, z);
+				if (be instanceof FreezerBlockEntity freezer) {
+					RetroMenu.open(player, new FreezerMenu(player.inventory, freezer), RetroMenu.MENU_FURNACE);
+				}
+				return true;
+			})
+			.retroapi$texture(new RetroIdentifier("retroapi_test", "freezer"))
+			.register(new RetroIdentifier("retroapi_test", "freezer"));
+		FREEZER_BLOCK.setKey("freezerBlock");
 
 		TEST_ITEM = RetroItemAccess.create()
 			.setMaxStackSize(64)
@@ -88,6 +117,24 @@ public class TestMod implements ModInitializer {
 			.retroapi$texture(new RetroIdentifier("retroapi_test", "test_item"))
 			.retroapi$register(new RetroIdentifier("retroapi_test", "test_item"));
 
-		LOGGER.info("Registered test_block, color_block, pipe, crate, test_item");
+		for (int i = 0; i < BLOCK_COUNT; i++) {
+			BLOCKS[i] = RetroBlockAccess.create(Material.STONE)
+				.setSounds(Block.STONE_SOUNDS)
+				.setStrength(1.5f);
+			((RetroBlockAccess) BLOCKS[i])
+				.register(new RetroIdentifier("retroapi_test", "block_" + i));
+			((RetroBlockAccess) BLOCKS[i]).retroapi$setSprite(Block.COBBLESTONE.getSprite(0));
+			BLOCKS[i].setKey("block" + i);
+		}
+
+		for (int i = 0; i < ITEM_COUNT; i++) {
+			ITEMS[i] = RetroItemAccess.create()
+				.setMaxStackSize(64)
+				.setKey("item" + i);
+			((RetroItemAccess) ITEMS[i])
+				.retroapi$register(new RetroIdentifier("retroapi_test", "item_" + i));
+		}
+
+		LOGGER.info("Registered test_block, color_block, pipe, crate, freezer, test_item, + " + BLOCK_COUNT + " numbered blocks, + " + ITEM_COUNT + " numbered items");
 	}
 }

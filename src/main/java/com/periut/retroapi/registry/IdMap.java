@@ -7,8 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class IdMap {
 	private static final Logger LOGGER = LogManager.getLogger("RetroAPI/IdMap");
@@ -176,5 +175,36 @@ public class IdMap {
 
 	public Map<RetroIdentifier, Integer> getItemIds() {
 		return itemIds;
+	}
+
+	public void purgeStaleEntries(List<BlockRegistration> blocks, List<ItemRegistration> items) {
+		Set<RetroIdentifier> activeBlocks = new HashSet<>();
+		for (BlockRegistration reg : blocks) {
+			activeBlocks.add(reg.getId());
+		}
+		Set<RetroIdentifier> activeItems = new HashSet<>();
+		for (ItemRegistration reg : items) {
+			activeItems.add(reg.getId());
+		}
+
+		int removedBlocks = 0, removedItems = 0;
+		Iterator<RetroIdentifier> it = blockIds.keySet().iterator();
+		while (it.hasNext()) {
+			if (!activeBlocks.contains(it.next())) {
+				it.remove();
+				removedBlocks++;
+			}
+		}
+		it = itemIds.keySet().iterator();
+		while (it.hasNext()) {
+			if (!activeItems.contains(it.next())) {
+				it.remove();
+				removedItems++;
+			}
+		}
+
+		if (removedBlocks > 0 || removedItems > 0) {
+			LOGGER.info("Purged {} stale block and {} stale item entries from ID map", removedBlocks, removedItems);
+		}
 	}
 }

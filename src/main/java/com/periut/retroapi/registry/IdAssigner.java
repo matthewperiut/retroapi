@@ -22,6 +22,9 @@ public class IdAssigner {
 		IdMap idMap = new IdMap();
 		idMap.load(idMapFile);
 
+		// Purge stale entries for blocks/items no longer registered
+		idMap.purgeStaleEntries(RetroRegistry.getBlocks(), RetroRegistry.getItems());
+
 		assignBlockIds(idMap);
 		assignItemIds(idMap);
 
@@ -85,10 +88,8 @@ public class IdAssigner {
 			}
 
 			if (currentId != targetId) {
-				remapBlock(block, currentId, targetId);
+				remapBlock(reg, currentId, targetId);
 			}
-
-			LOGGER.info("Assigned block {} -> ID {}", reg.getId(), targetId);
 		}
 	}
 
@@ -140,14 +141,8 @@ public class IdAssigner {
 
 	private static int findFreeBlockId(Set<Integer> usedIds) {
 		Item[] itemById = Item.BY_ID;
-		// Search extended range first (200 to current array size)
-		for (int i = 200; i < Block.BY_ID.length; i++) {
-			if (!usedIds.contains(i) && (i >= itemById.length || itemById[i] == null || itemById[i] instanceof BlockItem)) {
-				return i;
-			}
-		}
-		// Fall back to lower range
-		for (int i = 1; i < 200; i++) {
+		// Start at 256 to keep all RetroAPI blocks in extended storage range
+		for (int i = 256; i < Block.BY_ID.length; i++) {
 			if (!usedIds.contains(i) && (i >= itemById.length || itemById[i] == null || itemById[i] instanceof BlockItem)) {
 				return i;
 			}
@@ -185,7 +180,8 @@ public class IdAssigner {
 		LOGGER.info("Grew block arrays to size {}", newSize);
 	}
 
-	private static void remapBlock(Block block, int oldId, int newId) {
+	private static void remapBlock(BlockRegistration reg, int oldId, int newId) {
+		Block block = reg.getBlock();
 		growBlockArraysIfNeeded(newId);
 		Block[] byId = Block.BY_ID;
 
@@ -194,7 +190,7 @@ public class IdAssigner {
 		boolean hasBlockEntity = (oldId >= 0 && oldId < Block.HAS_BLOCK_ENTITY.length) && Block.HAS_BLOCK_ENTITY[oldId];
 		boolean ticksRandomly = (oldId >= 0 && oldId < Block.TICKS_RANDOMLY.length) && Block.TICKS_RANDOMLY[oldId];
 
-		// Clear old slot
+		// Clear old slot only if it's actually this block
 		if (oldId >= 0 && oldId < byId.length && byId[oldId] == block) {
 			byId[oldId] = null;
 			Block.IS_SOLID_RENDER[oldId] = false;
@@ -218,17 +214,20 @@ public class IdAssigner {
 		// Update the block's id field
 		block.id = newId;
 
-		// Remap the corresponding BlockItem in Item.BY_ID
-		Item[] itemById = Item.BY_ID;
-		if (oldId >= 0 && oldId < itemById.length && itemById[oldId] instanceof BlockItem) {
-			BlockItem blockItem = (BlockItem) itemById[oldId];
-			itemById[oldId] = null;
+		// Remap the corresponding BlockItem using the registration's stored reference
+		BlockItem blockItem = reg.getBlockItem();
+		if (blockItem != null) {
+			// Clear old Item.BY_ID slot only if it still points to this block's item
+			Item[] itemById = Item.BY_ID;
+			if (oldId >= 0 && oldId < itemById.length && itemById[oldId] == blockItem) {
+				itemById[oldId] = null;
+			}
 			itemById[newId] = blockItem;
 			blockItem.id = newId;
-			((BlockItem) blockItem).block = newId;
+			blockItem.block = newId;
 		}
 
-		LOGGER.debug("Remapped block from {} to {}", oldId, newId);
+		LOGGER.debug("Remapped block {} from {} to {}", reg.getId(), oldId, newId);
 	}
 
 	private static void remapItem(Item item, int oldId, int newId) {
@@ -270,7 +269,7 @@ public class IdAssigner {
 			int currentId = block.id;
 			growBlockArraysIfNeeded(numericId);
 			if (currentId != numericId) {
-				remapBlock(block, currentId, numericId);
+				remapBlock(reg, currentId, numericId);
 				LOGGER.info("Synced block {} -> ID {} (was {})", identifier, numericId, currentId);
 			}
 		}

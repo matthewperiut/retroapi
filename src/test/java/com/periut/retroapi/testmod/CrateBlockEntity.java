@@ -10,6 +10,7 @@ import net.minecraft.nbt.NbtList;
 
 public class CrateBlockEntity extends BlockEntity implements Inventory {
 	private final ItemStack[] items = new ItemStack[27];
+	public int openCount;
 
 	@Override
 	public int getSize() {

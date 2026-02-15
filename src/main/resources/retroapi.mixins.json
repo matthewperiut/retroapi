@@ -15,6 +15,7 @@
 		"ItemStackMixin",
 		"LanguageAccessor",
 		"RegionWorldStorageSourceAccessor",
+		"ServerPlayerEntityAccessor",
 		"WorldAccessor",
 		"WorldChunkMixin",
 		"WorldStorageAccessor"

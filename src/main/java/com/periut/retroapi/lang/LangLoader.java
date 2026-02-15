@@ -1,6 +1,9 @@
 package com.periut.retroapi.lang;
 
 import com.periut.retroapi.mixin.LanguageAccessor;
+import com.periut.retroapi.registry.BlockRegistration;
+import com.periut.retroapi.registry.ItemRegistration;
+import com.periut.retroapi.registry.RetroRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.locale.Language;
@@ -12,33 +15,72 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Properties;
 
 public class LangLoader {
 	private static final Logger LOGGER = LogManager.getLogger("RetroAPI/LangLoader");
 
 	public static void loadTranslations() {
-		if (FabricLoader.getInstance().isModLoaded("stationapi")) {
-			return;
-		}
-
 		Language language = Language.getInstance();
 		Properties translations = ((LanguageAccessor) language).retroapi$getTranslations();
 
-		for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
-			String modId = mod.getMetadata().getId();
-			String langPath = "/assets/" + modId + "/retroapi/lang/en_US.lang";
+		if (!FabricLoader.getInstance().isModLoaded("stationapi")) {
+			for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
+				String modId = mod.getMetadata().getId();
+				String langPath = "/assets/" + modId + "/retroapi/lang/en_US.lang";
 
-			try (InputStream is = LangLoader.class.getResourceAsStream(langPath)) {
-				if (is != null) {
-					loadLangFile(is, translations, modId);
+				try (InputStream is = LangLoader.class.getResourceAsStream(langPath)) {
+					if (is != null) {
+						loadLangFile(is, translations, modId);
+					}
+				} catch (IOException e) {
+					LOGGER.error("Failed to load lang file for mod {}", modId, e);
 				}
-			} catch (IOException e) {
-				LOGGER.error("Failed to load lang file for mod {}", modId, e);
 			}
 		}
+
+		injectDefaults(translations);
+	}
+
+	/**
+	 * Inject default translations for RetroAPI blocks/items that don't have one.
+	 * Uses the identifier path formatted as a title (e.g. "test_block" -> "Test Block").
+	 */
+	public static void injectDefaults(Properties translations) {
+		int count = 0;
+		for (BlockRegistration reg : RetroRegistry.getBlocks()) {
+			String key = reg.getBlock().getTranslationKey() + ".name";
+			if (!translations.containsKey(key)) {
+				translations.setProperty(key, formatName(reg.getId().path()));
+				count++;
+			}
+		}
+		for (ItemRegistration reg : RetroRegistry.getItems()) {
+			String key = reg.getItem().getTranslationKey() + ".name";
+			if (!translations.containsKey(key)) {
+				translations.setProperty(key, formatName(reg.getId().path()));
+				count++;
+			}
+		}
+		if (count > 0) {
+			LOGGER.info("Injected {} default translations for unnamed blocks/items", count);
+		}
+	}
+
+	/**
+	 * Format an identifier path as a human-readable name.
+	 * "test_block" -> "Test Block", "crate" -> "Crate"
+	 */
+	private static String formatName(String path) {
+		StringBuilder sb = new StringBuilder();
+		for (String word : path.split("_")) {
+			if (!word.isEmpty()) {
+				if (sb.length() > 0) sb.append(' ');
+				sb.append(Character.toUpperCase(word.charAt(0)));
+				sb.append(word.substring(1));
+			}
+		}
+		return sb.toString();
 	}
 
 	private static void loadLangFile(InputStream is, Properties translations, String modId) throws IOException {
