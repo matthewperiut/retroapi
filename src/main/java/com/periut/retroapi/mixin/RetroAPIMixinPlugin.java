@@ -19,7 +19,12 @@ public class RetroAPIMixinPlugin implements IMixinConfigPlugin {
 	);
 
 	private static final Set<String> STATIONAPI_DISABLED_MIXINS = Set.of(
-		"com.periut.retroapi.mixin.ItemStackMixin"
+		"com.periut.retroapi.mixin.ItemStackMixin",
+		"com.periut.retroapi.mixin.BlockUpdatePacketMixin",
+		"com.periut.retroapi.mixin.BlocksUpdatePacketMixin",
+		"com.periut.retroapi.mixin.WorldChunkPacketMixin",
+		"com.periut.retroapi.mixin.ChunkSendMixin",
+		"com.periut.retroapi.mixin.ClientNetworkHandlerMixin"
 	);
 
 	private boolean stationAPIPresent;

@@ -9,6 +9,8 @@
 		"BlockArrayExpandMixin",
 		"BlockEntityAccessor",
 		"BlockMixin",
+		"BlockUpdatePacketMixin",
+		"BlocksUpdatePacketMixin",
 		"ChunkSendMixin",
 		"ChunkStorageMixin",
 		"ItemMixin",
@@ -18,6 +20,7 @@
 		"ServerPlayerEntityAccessor",
 		"WorldAccessor",
 		"WorldChunkMixin",
+		"WorldChunkPacketMixin",
 		"WorldStorageAccessor"
 	],
 	"client": [
@@ -25,6 +28,7 @@
 		"BlockParticleMixin",
 		"BlockRendererAtlasMixin",
 		"BlockRendererMixin",
+		"ClientNetworkHandlerMixin",
 		"ItemInHandRendererMixin",
 		"ItemRendererMixin",
 		"MinecraftAccessor",
