@@ -27,7 +27,7 @@ public class ItemRendererMixin {
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getSprite()I")
 	)
 	private void retroapi$setAtlasSizeForRender(ItemEntity itemEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
-		retroapi$atlasSize = itemEntity.item.id < 256 ? AtlasExpander.terrainAtlasSize : 256;
+		retroapi$atlasSize = itemEntity.item.id < 256 ? AtlasExpander.terrainAtlasSize : AtlasExpander.itemAtlasSize;
 	}
 
 	@ModifyConstant(
@@ -50,7 +50,7 @@ public class ItemRendererMixin {
 		int item, int metadata, int sprite, int x, int y,
 		CallbackInfo ci
 	) {
-		retroapi$atlasSize = item < 256 ? AtlasExpander.terrainAtlasSize : 256;
+		retroapi$atlasSize = item < 256 ? AtlasExpander.terrainAtlasSize : AtlasExpander.itemAtlasSize;
 	}
 
 	@ModifyConstant(

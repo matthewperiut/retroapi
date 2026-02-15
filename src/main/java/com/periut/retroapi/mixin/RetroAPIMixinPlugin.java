@@ -10,6 +10,7 @@ import java.util.Set;
 
 public class RetroAPIMixinPlugin implements IMixinConfigPlugin {
 	private static final Set<String> ATLAS_MIXINS = Set.of(
+		"com.periut.retroapi.mixin.AchievementsScreenMixin",
 		"com.periut.retroapi.mixin.BlockRendererAtlasMixin",
 		"com.periut.retroapi.mixin.BlockParticleMixin",
 		"com.periut.retroapi.mixin.ItemInHandRendererMixin",

@@ -71,4 +71,38 @@ public class BlockRendererAtlasMixin {
 	private float retroapi$fixAtlasDivisorFloat(float original) {
 		return (float) AtlasExpander.terrainAtlasSize;
 	}
+
+	// --- Torch top face UV offsets (pixel / 256) ---
+
+	@ModifyConstant(
+		method = "tesselateTorch(Lnet/minecraft/block/Block;DDDDD)V",
+		constant = @Constant(doubleValue = 0.02734375)
+	)
+	private double retroapi$fixTorchTopU1(double original) {
+		return 7.0 / AtlasExpander.terrainAtlasSize;
+	}
+
+	@ModifyConstant(
+		method = "tesselateTorch(Lnet/minecraft/block/Block;DDDDD)V",
+		constant = @Constant(doubleValue = 0.0234375)
+	)
+	private double retroapi$fixTorchTopV1(double original) {
+		return 6.0 / AtlasExpander.terrainAtlasSize;
+	}
+
+	@ModifyConstant(
+		method = "tesselateTorch(Lnet/minecraft/block/Block;DDDDD)V",
+		constant = @Constant(doubleValue = 0.03515625)
+	)
+	private double retroapi$fixTorchTopU2(double original) {
+		return 9.0 / AtlasExpander.terrainAtlasSize;
+	}
+
+	@ModifyConstant(
+		method = "tesselateTorch(Lnet/minecraft/block/Block;DDDDD)V",
+		constant = @Constant(doubleValue = 0.03125)
+	)
+	private double retroapi$fixTorchTopV2(double original) {
+		return 8.0 / AtlasExpander.terrainAtlasSize;
+	}
 }

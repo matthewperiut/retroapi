@@ -23,7 +23,7 @@ public class RetroTextures {
 	private static final List<RetroTexture> terrainTextures = new ArrayList<>();
 	private static final List<RetroTexture> itemTextures = new ArrayList<>();
 	private static int nextTerrainSlot = 256;
-	private static int nextItemSlot = 128;
+	private static int nextItemSlot = 256;
 
 	// Queued block/item updates for StationAPI resolution
 	private static final List<BlockEntry> trackedBlocks = new ArrayList<>();
