@@ -2,6 +2,7 @@ package com.periut.retroapi.mixin;
 
 import com.periut.retroapi.storage.ChunkExtendedBlocks;
 import com.periut.retroapi.storage.ExtendedBlocksAccess;
+import com.periut.retroapi.storage.InventorySidecar;
 import com.periut.retroapi.storage.RegionSidecar;
 import com.periut.retroapi.storage.SidecarManager;
 import net.minecraft.nbt.NbtCompound;
@@ -22,15 +23,23 @@ public class ChunkStorageMixin {
 		WorldChunk chunk = cir.getReturnValue();
 		if (chunk == null) return;
 
+		// Restore extended blocks from sidecar
 		RegionSidecar sidecar = SidecarManager.getRegion(chunk.chunkX, chunk.chunkZ);
-		if (sidecar == null) return;
+		if (sidecar != null) {
+			ChunkExtendedBlocks extended = ((ExtendedBlocksAccess) chunk).retroapi$getExtendedBlocks();
+			sidecar.loadChunkData(chunk.chunkX, chunk.chunkZ, extended);
+		}
 
-		ChunkExtendedBlocks extended = ((ExtendedBlocksAccess) chunk).retroapi$getExtendedBlocks();
-		sidecar.loadChunkData(chunk.chunkX, chunk.chunkZ, extended);
+		// Restore modded block entities, inventory items, and item entities from sidecar
+		InventorySidecar invSidecar = SidecarManager.getInventoryRegion(chunk.chunkX, chunk.chunkZ);
+		if (invSidecar != null) {
+			invSidecar.restoreChunkContent(chunk, world);
+		}
 	}
 
 	@Inject(method = "saveChunkToNbt", at = @At("HEAD"))
 	private static void retroapi$sanitizeBeforeSave(WorldChunk chunk, World world, NbtCompound nbt, CallbackInfo ci) {
+		// Set extended block positions to air in the vanilla byte array
 		ChunkExtendedBlocks extended = ((ExtendedBlocksAccess) chunk).retroapi$getExtendedBlocks();
 		for (int index : extended.getBlockIds().keySet()) {
 			int blockId = extended.getBlockId(index);
@@ -42,10 +51,18 @@ public class ChunkStorageMixin {
 
 	@Inject(method = "saveChunkToNbt", at = @At("RETURN"))
 	private static void retroapi$onSaveChunk(WorldChunk chunk, World world, NbtCompound nbt, CallbackInfo ci) {
-		RegionSidecar sidecar = SidecarManager.getRegion(chunk.chunkX, chunk.chunkZ);
-		if (sidecar == null) return;
-
 		ChunkExtendedBlocks extended = ((ExtendedBlocksAccess) chunk).retroapi$getExtendedBlocks();
-		sidecar.saveChunkData(chunk.chunkX, chunk.chunkZ, extended);
+
+		// Save extended blocks to block sidecar
+		RegionSidecar sidecar = SidecarManager.getRegion(chunk.chunkX, chunk.chunkZ);
+		if (sidecar != null) {
+			sidecar.saveChunkData(chunk.chunkX, chunk.chunkZ, extended);
+		}
+
+		// Filter the NBT to remove all modded content and save to inventory sidecar
+		InventorySidecar invSidecar = SidecarManager.getInventoryRegion(chunk.chunkX, chunk.chunkZ);
+		if (invSidecar != null) {
+			invSidecar.filterAndSave(chunk.chunkX, chunk.chunkZ, nbt, extended);
+		}
 	}
 }

@@ -18,6 +18,10 @@ public class RetroAPIMixinPlugin implements IMixinConfigPlugin {
 		"com.periut.retroapi.mixin.TextureManagerMixin"
 	);
 
+	private static final Set<String> STATIONAPI_DISABLED_MIXINS = Set.of(
+		"com.periut.retroapi.mixin.ItemStackMixin"
+	);
+
 	private boolean stationAPIPresent;
 
 	@Override
@@ -32,7 +36,7 @@ public class RetroAPIMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		if (ATLAS_MIXINS.contains(mixinClassName)) {
+		if (ATLAS_MIXINS.contains(mixinClassName) || STATIONAPI_DISABLED_MIXINS.contains(mixinClassName)) {
 			return !stationAPIPresent;
 		}
 		return true;

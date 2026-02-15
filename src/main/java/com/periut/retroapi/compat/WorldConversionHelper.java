@@ -42,8 +42,13 @@ public class WorldConversionHelper {
 			int numericId = entry.getValue();
 			String flattenedId = entry.getKey().toString();
 
-			// putState registers the block for chunk conversion AND as an item (block items)
-			StationFlatteningItemStackSchema.putState(numericId, flattenedId);
+			// OLD_ID_TO_BLOCKSTATE is only 256 entries; extended blocks (>= 256) are stored
+			// as air in vanilla chunk data, so they never appear in block conversion.
+			if (numericId < 256) {
+				StationFlatteningItemStackSchema.putState(numericId, flattenedId);
+			}
+			// Always register as item (OLD_ID_TO_ITEM has 32000 entries) for block items in inventories
+			StationFlatteningItemStackSchema.putItem(numericId, flattenedId);
 			blockCount++;
 			LOGGER.debug("Injected block mapping: {} -> {}", numericId, flattenedId);
 		}

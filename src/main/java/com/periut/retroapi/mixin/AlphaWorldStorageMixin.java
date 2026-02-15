@@ -26,12 +26,11 @@ public class AlphaWorldStorageMixin {
 
 		File worldDir = ((WorldStorageAccessor) (Object) this).retroapi$getDir();
 
-		SidecarManager.setWorldDir(worldDir);
-
 		if (FabricLoader.getInstance().isModLoaded("stationapi")) {
 			LOGGER.info("StationAPI present, saving current ID map for world: {}", worldDir);
 			IdAssigner.saveCurrentIds(worldDir);
 		} else {
+			SidecarManager.setWorldDir(worldDir);
 			LOGGER.info("Assigning IDs for world: {}", worldDir);
 			IdAssigner.assignIds(worldDir);
 		}
