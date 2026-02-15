@@ -1,7 +1,5 @@
 package com.periut.retroapi.api;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.block.BlockRenderer;
@@ -11,8 +9,9 @@ import net.minecraft.world.WorldView;
 /**
  * Context passed to {@link CustomBlockRenderer} implementations.
  * Provides access to the block, position, world, and rendering helpers.
+ * Not annotated @Environment(CLIENT) so that lambdas referencing this type
+ * can be created on the server without triggering class-loading errors.
  */
-@Environment(EnvType.CLIENT)
 public class BlockRenderContext {
 	private static final float[] FACE_SHADES = {0.5F, 1.0F, 0.8F, 0.8F, 0.6F, 0.6F};
 

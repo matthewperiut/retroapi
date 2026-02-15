@@ -2,6 +2,7 @@ package com.periut.retroapi.api;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.item.Item;
 
 /**
  * Duck interface injected onto all Blocks via mixin.
@@ -42,6 +43,18 @@ public interface RetroBlockAccess {
 	RetroBlockAccess retroapi$texture(RetroIdentifier textureId);
 
 	/**
+	 * Associate a block entity type with this block.
+	 * Sets HAS_BLOCK_ENTITY for this block's ID and stores the factory for automatic
+	 * creation/removal on block place/break.
+	 */
+	RetroBlockAccess setBlockEntity(RetroBlockEntityType<?> type);
+
+	/**
+	 * Set a callback for when a player right-clicks this block.
+	 */
+	RetroBlockAccess setActivated(BlockActivatedHandler handler);
+
+	/**
 	 * Register this block with RetroAPI.
 	 * Handles BlockItem creation, registry, and StationAPI compat.
 	 */
@@ -63,11 +76,12 @@ public interface RetroBlockAccess {
 	 */
 	static int allocatePlaceholderBlockId() {
 		Block[] byId = Block.BY_ID;
-		for (int i = 200; i < 256; i++) {
-			if (byId[i] == null) {
+		Item[] itemById = Item.BY_ID;
+		for (int i = 200; i < byId.length; i++) {
+			if (byId[i] == null && (i >= itemById.length || itemById[i] == null)) {
 				return i;
 			}
 		}
-		throw new RuntimeException("No more placeholder block IDs available (0-255 exhausted)");
+		throw new RuntimeException("No more placeholder block IDs available (0-" + (byId.length - 1) + " exhausted)");
 	}
 }

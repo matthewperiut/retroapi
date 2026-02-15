@@ -13,6 +13,10 @@ import org.apache.logging.log4j.Logger;
 public class RetroAPI implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger("RetroAPI");
 
+	public static boolean isBlock(int id) {
+		return id >= 0 && id < Block.BY_ID.length && Block.BY_ID[id] != null;
+	}
+
 	@Override
 	public void init() {
 		LOGGER.info("RetroAPI initializing");

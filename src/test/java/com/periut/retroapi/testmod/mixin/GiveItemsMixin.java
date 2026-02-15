@@ -4,6 +4,7 @@ import com.periut.retroapi.testmod.TestMod;
 import net.minecraft.entity.mob.player.PlayerEntity;
 import net.minecraft.entity.mob.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,16 +25,23 @@ public class GiveItemsMixin {
 		if (!retroapi_test$givenItems) {
 			retroapi_test$givenItems = true;
 
+			PlayerEntity self = (PlayerEntity) (Object) this;
+			World world = self.world;
+			if (world == null || world.isMultiplayer) return;
+
 			if (TestMod.TEST_BLOCK != null) {
 				inventory.addItem(new ItemStack(TestMod.TEST_BLOCK, 64));
 				inventory.addItem(new ItemStack(TestMod.COLOR_BLOCK, 64));
 				inventory.addItem(new ItemStack(TestMod.PIPE_BLOCK, 64));
-				TestMod.LOGGER.info("Gave test block to player");
+			}
+			if (TestMod.CRATE_BLOCK != null) {
+				inventory.addItem(new ItemStack(TestMod.CRATE_BLOCK, 64));
 			}
 			if (TestMod.TEST_ITEM != null) {
 				inventory.addItem(new ItemStack(TestMod.TEST_ITEM, 64));
-				TestMod.LOGGER.info("Gave test item to player");
 			}
+
+			TestMod.LOGGER.info("Gave test items to player");
 		}
 	}
 }

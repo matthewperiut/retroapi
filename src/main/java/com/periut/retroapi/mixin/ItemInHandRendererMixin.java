@@ -1,5 +1,6 @@
 package com.periut.retroapi.mixin;
 
+import com.periut.retroapi.RetroAPI;
 import com.periut.retroapi.texture.AtlasExpander;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -21,14 +22,36 @@ public class ItemInHandRendererMixin {
 	@Unique
 	private int retroapi$atlasSize = 256;
 
-	// --- render(): set atlas size before UV calculation for held 2D items ---
+	@Unique
+	private int retroapi$currentItemId = 0;
+
+	// --- render(): 3D block check + atlas size for held items ---
+
+	@Inject(
+		method = "render(Lnet/minecraft/entity/mob/MobEntity;Lnet/minecraft/item/ItemStack;)V",
+		at = @At("HEAD")
+	)
+	private void retroapi$captureItemId(MobEntity mob, ItemStack itemInHand, CallbackInfo ci) {
+		retroapi$currentItemId = itemInHand != null ? itemInHand.id : 0;
+	}
 
 	@Inject(
 		method = "render(Lnet/minecraft/entity/mob/MobEntity;Lnet/minecraft/item/ItemStack;)V",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/MobEntity;getItemSprite(Lnet/minecraft/item/ItemStack;)I")
 	)
 	private void retroapi$setAtlasSizeForRender(MobEntity mob, ItemStack itemInHand, CallbackInfo ci) {
-		retroapi$atlasSize = itemInHand.id < 256 ? AtlasExpander.terrainAtlasSize : AtlasExpander.itemAtlasSize;
+		retroapi$atlasSize = RetroAPI.isBlock(itemInHand.id) ? AtlasExpander.terrainAtlasSize : AtlasExpander.itemAtlasSize;
+	}
+
+	@ModifyConstant(
+		method = "render(Lnet/minecraft/entity/mob/MobEntity;Lnet/minecraft/item/ItemStack;)V",
+		constant = @Constant(intValue = 256)
+	)
+	private int retroapi$fixBlockCheck(int original) {
+		if (RetroAPI.isBlock(retroapi$currentItemId)) {
+			return retroapi$currentItemId + 1;
+		}
+		return original;
 	}
 
 	@ModifyConstant(

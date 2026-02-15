@@ -8,7 +8,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
+import net.minecraft.entity.mob.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,6 +30,8 @@ public abstract class BlockMixin implements RetroBlockAccess {
 	@Unique private boolean retroapi$solidRenderSet = false;
 	@Unique private boolean retroapi$solidRender = true;
 	@Unique private float[] retroapi$customBounds = null;
+	@Unique private RetroBlockEntityType<?> retroapi$blockEntityType = null;
+	@Unique private BlockActivatedHandler retroapi$activatedHandler = null;
 
 	@Override
 	public RetroBlockAccess retroapi$setSolidRender(boolean solid) {
@@ -112,6 +116,47 @@ public abstract class BlockMixin implements RetroBlockAccess {
 	private void retroapi$getRenderType(CallbackInfoReturnable<Integer> cir) {
 		if (this.retroapi$renderType != -1) {
 			cir.setReturnValue(this.retroapi$renderType);
+		}
+	}
+
+	@Override
+	public RetroBlockAccess setBlockEntity(RetroBlockEntityType<?> type) {
+		this.retroapi$blockEntityType = type;
+		Block.HAS_BLOCK_ENTITY[this.id] = true;
+		return this;
+	}
+
+	@Override
+	public RetroBlockAccess setActivated(BlockActivatedHandler handler) {
+		this.retroapi$activatedHandler = handler;
+		return this;
+	}
+
+	@Inject(method = "onAdded", at = @At("HEAD"))
+	private void retroapi$onAdded(World world, int x, int y, int z, CallbackInfo ci) {
+		if (this.retroapi$blockEntityType != null) {
+			world.setBlockEntity(x, y, z, this.retroapi$blockEntityType.create());
+		}
+	}
+
+	@Inject(method = "onRemoved", at = @At("HEAD"))
+	private void retroapi$onRemoved(World world, int x, int y, int z, CallbackInfo ci) {
+		if (this.retroapi$blockEntityType != null) {
+			world.removeBlockEntity(x, y, z);
+		}
+	}
+
+	@Inject(method = "use", at = @At("HEAD"), cancellable = true)
+	private void retroapi$use(World world, int x, int y, int z, PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
+		if (this.retroapi$activatedHandler != null) {
+			// Match vanilla BlockWithBlockEntity behavior: on client in multiplayer,
+			// just return true without running the handler. The server will run the
+			// handler and send inventory sync packets.
+			if (world.isMultiplayer) {
+				cir.setReturnValue(true);
+				return;
+			}
+			cir.setReturnValue(this.retroapi$activatedHandler.onActivated(world, x, y, z, player));
 		}
 	}
 }

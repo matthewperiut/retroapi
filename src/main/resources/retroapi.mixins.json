@@ -6,11 +6,17 @@
 	"plugin": "com.periut.retroapi.mixin.RetroAPIMixinPlugin",
 	"mixins": [
 		"AlphaWorldStorageMixin",
+		"BlockArrayExpandMixin",
+		"BlockEntityAccessor",
 		"BlockMixin",
+		"ChunkSendMixin",
+		"ChunkStorageMixin",
 		"ItemMixin",
+		"ItemStackMixin",
 		"LanguageAccessor",
 		"RegionWorldStorageSourceAccessor",
 		"WorldAccessor",
+		"WorldChunkMixin",
 		"WorldStorageAccessor"
 	],
 	"client": [
@@ -22,6 +28,7 @@
 		"ItemRendererMixin",
 		"MinecraftAccessor",
 		"MinecraftMixin",
+		"PlayerRendererMixin",
 		"TextureManagerMixin"
 	],
 	"server": [

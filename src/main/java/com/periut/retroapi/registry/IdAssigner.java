@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import net.ornithemc.osl.networking.api.PacketBuffer;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -138,14 +139,16 @@ public class IdAssigner {
 	}
 
 	private static int findFreeBlockId(Set<Integer> usedIds) {
-		for (int i = 200; i < 256; i++) {
-			if (!usedIds.contains(i)) {
+		Item[] itemById = Item.BY_ID;
+		// Search extended range first (200 to current array size)
+		for (int i = 200; i < Block.BY_ID.length; i++) {
+			if (!usedIds.contains(i) && (i >= itemById.length || itemById[i] == null || itemById[i] instanceof BlockItem)) {
 				return i;
 			}
 		}
 		// Fall back to lower range
 		for (int i = 1; i < 200; i++) {
-			if (!usedIds.contains(i)) {
+			if (!usedIds.contains(i) && (i >= itemById.length || itemById[i] == null || itemById[i] instanceof BlockItem)) {
 				return i;
 			}
 		}
@@ -167,11 +170,29 @@ public class IdAssigner {
 		throw new RuntimeException("No free item IDs available");
 	}
 
+	public static void growBlockArraysIfNeeded(int minSize) {
+		if (minSize < Block.BY_ID.length) return;
+		int newSize = Block.BY_ID.length;
+		while (newSize <= minSize) newSize *= 2;
+		Block.BY_ID = Arrays.copyOf(Block.BY_ID, newSize);
+		Block.IS_SOLID_RENDER = Arrays.copyOf(Block.IS_SOLID_RENDER, newSize);
+		Block.OPACITIES = Arrays.copyOf(Block.OPACITIES, newSize);
+		Block.IS_TRANSLUCENT = Arrays.copyOf(Block.IS_TRANSLUCENT, newSize);
+		Block.HAS_BLOCK_ENTITY = Arrays.copyOf(Block.HAS_BLOCK_ENTITY, newSize);
+		Block.TICKS_RANDOMLY = Arrays.copyOf(Block.TICKS_RANDOMLY, newSize);
+		Block.LIGHT = Arrays.copyOf(Block.LIGHT, newSize);
+		Block.UPDATE_CLIENTS = Arrays.copyOf(Block.UPDATE_CLIENTS, newSize);
+		LOGGER.info("Grew block arrays to size {}", newSize);
+	}
+
 	private static void remapBlock(Block block, int oldId, int newId) {
+		growBlockArraysIfNeeded(newId);
 		Block[] byId = Block.BY_ID;
 
-		// Save light value before clearing
+		// Save values before clearing
 		int lightValue = (oldId >= 0 && oldId < Block.LIGHT.length) ? Block.LIGHT[oldId] : 0;
+		boolean hasBlockEntity = (oldId >= 0 && oldId < Block.HAS_BLOCK_ENTITY.length) && Block.HAS_BLOCK_ENTITY[oldId];
+		boolean ticksRandomly = (oldId >= 0 && oldId < Block.TICKS_RANDOMLY.length) && Block.TICKS_RANDOMLY[oldId];
 
 		// Clear old slot
 		if (oldId >= 0 && oldId < byId.length && byId[oldId] == block) {
@@ -190,6 +211,8 @@ public class IdAssigner {
 		Block.IS_SOLID_RENDER[newId] = block.isSolidRender();
 		Block.OPACITIES[newId] = block.isSolidRender() ? 255 : 0;
 		Block.IS_TRANSLUCENT[newId] = !block.material.isOpaque();
+		Block.HAS_BLOCK_ENTITY[newId] = hasBlockEntity;
+		Block.TICKS_RANDOMLY[newId] = ticksRandomly;
 		Block.LIGHT[newId] = lightValue;
 
 		// Update the block's id field
@@ -245,6 +268,7 @@ public class IdAssigner {
 
 			Block block = reg.getBlock();
 			int currentId = block.id;
+			growBlockArraysIfNeeded(numericId);
 			if (currentId != numericId) {
 				remapBlock(block, currentId, numericId);
 				LOGGER.info("Synced block {} -> ID {} (was {})", identifier, numericId, currentId);

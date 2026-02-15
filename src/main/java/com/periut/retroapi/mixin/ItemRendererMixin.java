@@ -1,5 +1,6 @@
 package com.periut.retroapi.mixin;
 
+import com.periut.retroapi.RetroAPI;
 import com.periut.retroapi.texture.AtlasExpander;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,14 +21,36 @@ public class ItemRendererMixin {
 	@Unique
 	private int retroapi$atlasSize = 256;
 
-	// --- render() for 2D dropped items: set atlas size before UV calculation ---
+	@Unique
+	private int retroapi$currentItemId = 0;
+
+	// --- render() for dropped items ---
+
+	@Inject(
+		method = "render(Lnet/minecraft/entity/ItemEntity;DDDFF)V",
+		at = @At("HEAD")
+	)
+	private void retroapi$captureItemIdForRender(ItemEntity itemEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
+		retroapi$currentItemId = itemEntity.item.id;
+	}
 
 	@Inject(
 		method = "render(Lnet/minecraft/entity/ItemEntity;DDDFF)V",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getSprite()I")
 	)
 	private void retroapi$setAtlasSizeForRender(ItemEntity itemEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
-		retroapi$atlasSize = itemEntity.item.id < 256 ? AtlasExpander.terrainAtlasSize : AtlasExpander.itemAtlasSize;
+		retroapi$atlasSize = RetroAPI.isBlock(itemEntity.item.id) ? AtlasExpander.terrainAtlasSize : AtlasExpander.itemAtlasSize;
+	}
+
+	@ModifyConstant(
+		method = "render(Lnet/minecraft/entity/ItemEntity;DDDFF)V",
+		constant = @Constant(intValue = 256)
+	)
+	private int retroapi$fixBlockCheckInRender(int original) {
+		if (RetroAPI.isBlock(retroapi$currentItemId)) {
+			return retroapi$currentItemId + 1;
+		}
+		return original;
 	}
 
 	@ModifyConstant(
@@ -42,6 +65,19 @@ public class ItemRendererMixin {
 
 	@Inject(
 		method = "renderGuiItem",
+		at = @At("HEAD")
+	)
+	private void retroapi$captureItemIdForGui(
+		net.minecraft.client.render.TextRenderer textRenderer,
+		net.minecraft.client.render.texture.TextureManager textureManager,
+		int item, int metadata, int sprite, int x, int y,
+		CallbackInfo ci
+	) {
+		retroapi$currentItemId = item;
+	}
+
+	@Inject(
+		method = "renderGuiItem",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/ItemRenderer;drawTexture(IIIIII)V")
 	)
 	private void retroapi$setAtlasSizeForGui(
@@ -50,7 +86,18 @@ public class ItemRendererMixin {
 		int item, int metadata, int sprite, int x, int y,
 		CallbackInfo ci
 	) {
-		retroapi$atlasSize = item < 256 ? AtlasExpander.terrainAtlasSize : AtlasExpander.itemAtlasSize;
+		retroapi$atlasSize = RetroAPI.isBlock(item) ? AtlasExpander.terrainAtlasSize : AtlasExpander.itemAtlasSize;
+	}
+
+	@ModifyConstant(
+		method = "renderGuiItem",
+		constant = @Constant(intValue = 256)
+	)
+	private int retroapi$fixBlockCheckInGui(int original) {
+		if (RetroAPI.isBlock(retroapi$currentItemId)) {
+			return retroapi$currentItemId + 1;
+		}
+		return original;
 	}
 
 	@ModifyConstant(
