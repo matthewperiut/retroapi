@@ -220,7 +220,7 @@ public abstract class WorldChunkMixin implements ExtendedBlocksAccess {
 
 	// --- Heightmap fixes for extended blocks ---
 
-	@Inject(method = "populateHeightMapOnly", at = @At("RETURN"))
+	@Inject(method = "populateHeightMapOnly", at = @At("RETURN"), require = 0)
 	private void retroapi$fixHeightMapOnly(CallbackInfo ci) {
 		retroapi$adjustHeightMapForExtendedBlocks();
 	}
