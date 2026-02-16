@@ -16,7 +16,7 @@ public class FreezerMenu extends RetroMenu {
 	@SyncField("fuelTime")
 	public int fuelTime;
 
-	@SyncField("totalFu$elTime")
+	@SyncField("totalFuelTime")
 	public int totalFuelTime;
 
 	public FreezerMenu(PlayerInventory playerInv, FreezerBlockEntity freezer) {
