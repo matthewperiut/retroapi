@@ -8,7 +8,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockWithBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.ChunkNibbleStorage;
 import net.minecraft.world.chunk.WorldChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,6 +33,11 @@ public abstract class WorldChunkMixin implements ExtendedBlocksAccess {
 	@Shadow public Map<BlockPos, BlockEntity> blockEntities;
 	@Shadow public byte[] heightMap;
 	@Shadow public int lowestHeight;
+	@Shadow public ChunkNibbleStorage skyLight;
+
+	@Shadow public abstract int getHeight(int x, int z);
+	@Shadow private void lightGaps(int localX, int localZ) {}
+	@Shadow private void lightGap(int x, int z, int height) {}
 
 	@Unique
 	private final ChunkExtendedBlocks retroapi$extendedBlocks = new ChunkExtendedBlocks();
@@ -76,8 +83,14 @@ public abstract class WorldChunkMixin implements ExtendedBlocksAccess {
 			// Store the extended block
 			retroapi$extendedBlocks.set(index, rawId, 0);
 
-			// Update heightmap for this column since vanilla doesn't know about extended blocks
+			// Update heightmap and lighting to match vanilla's setBlockAt flow
 			retroapi$updateHeightMapForColumn(x, z);
+
+			int worldX = chunkX * 16 + x;
+			int worldZ = chunkZ * 16 + z;
+			world.updateLight(LightType.SKY, worldX, y, worldZ, worldX, y, worldZ);
+			world.updateLight(LightType.BLOCK, worldX, y, worldZ, worldX, y, worldZ);
+			lightGaps(x, z);
 
 			// Call onAdded for the new block
 			Block newBlock = Block.BY_ID[rawId];
@@ -131,8 +144,14 @@ public abstract class WorldChunkMixin implements ExtendedBlocksAccess {
 			// Store the extended block with metadata
 			retroapi$extendedBlocks.set(index, rawId, meta);
 
-			// Update heightmap for this column since vanilla doesn't know about extended blocks
+			// Update heightmap and lighting to match vanilla's setBlockWithMetadataAt flow
 			retroapi$updateHeightMapForColumn(x, z);
+
+			int worldX = chunkX * 16 + x;
+			int worldZ = chunkZ * 16 + z;
+			world.updateLight(LightType.SKY, worldX, y, worldZ, worldX, y, worldZ);
+			world.updateLight(LightType.BLOCK, worldX, y, worldZ, worldX, y, worldZ);
+			lightGaps(x, z);
 
 			// Call onAdded for the new block
 			Block newBlock = Block.BY_ID[rawId];
@@ -234,6 +253,9 @@ public abstract class WorldChunkMixin implements ExtendedBlocksAccess {
 	private void retroapi$adjustHeightMapForExtendedBlocks() {
 		if (retroapi$extendedBlocks.isEmpty()) return;
 
+		// Track which columns need sky light recalculation
+		boolean[] affectedColumns = new boolean[256];
+
 		for (Map.Entry<Integer, Integer> entry : retroapi$extendedBlocks.getBlockIds().entrySet()) {
 			int blockId = entry.getValue();
 			if (blockId <= 0 || blockId >= Block.OPACITIES.length) continue;
@@ -254,6 +276,57 @@ public abstract class WorldChunkMixin implements ExtendedBlocksAccess {
 					lowestHeight = y + 1;
 				}
 			}
+
+			affectedColumns[hmIndex] = true;
+		}
+
+		// Recalculate sky light and propagate to neighbors for affected columns
+		for (int hmIndex = 0; hmIndex < 256; hmIndex++) {
+			if (affectedColumns[hmIndex]) {
+				int localX = hmIndex & 15;
+				int localZ = hmIndex >> 4;
+				retroapi$recalculateColumnSkyLight(localX, localZ);
+				lightGaps(localX, localZ);
+			}
+		}
+	}
+
+	@Unique
+	private void retroapi$recalculateColumnSkyLight(int localX, int localZ) {
+		if (world != null && world.dimension.noSky) return;
+
+		int hmIndex = localZ << 4 | localX;
+		int hmHeight = heightMap[hmIndex] & 255;
+		int baseOffset = localX << 11 | localZ << 7;
+
+		// Above heightmap: full sky light
+		for (int y = 127; y >= hmHeight; y--) {
+			skyLight.set(localX, y, localZ, 15);
+		}
+
+		// Below heightmap: attenuate downward
+		int light = 15;
+		for (int y = hmHeight - 1; y >= 0; y--) {
+			int extIndex = baseOffset | y;
+			int blockId;
+			if (retroapi$extendedBlocks.hasEntry(extIndex)) {
+				blockId = retroapi$extendedBlocks.getBlockId(extIndex);
+			} else {
+				blockId = blocks[extIndex] & 255;
+			}
+
+			int opacity = 0;
+			if (blockId > 0 && blockId < Block.OPACITIES.length) {
+				opacity = Block.OPACITIES[blockId];
+			}
+			// Vanilla uses minimum attenuation of 1 below the heightmap
+			if (opacity == 0) {
+				opacity = 1;
+			}
+
+			light -= opacity;
+			if (light < 0) light = 0;
+			skyLight.set(localX, y, localZ, light);
 		}
 	}
 
@@ -280,14 +353,22 @@ public abstract class WorldChunkMixin implements ExtendedBlocksAccess {
 		}
 
 		if (newHeight != currentHeight) {
+			// Notify world of heightmap change (matches vanilla updateHeightMap)
+			world.onHeightMapChanged(localX, localZ, newHeight, currentHeight);
+
 			heightMap[hmIndex] = (byte) newHeight;
+
 			// Recalculate lowestHeight
-			int minH = 127;
-			for (int i = 0; i < 256; i++) {
-				int h = heightMap[i] & 255;
-				if (h < minH) minH = h;
+			if (newHeight < lowestHeight) {
+				lowestHeight = newHeight;
+			} else {
+				int minH = 127;
+				for (int i = 0; i < 256; i++) {
+					int h = heightMap[i] & 255;
+					if (h < minH) minH = h;
+				}
+				lowestHeight = minH;
 			}
-			lowestHeight = minH;
 		}
 	}
 }

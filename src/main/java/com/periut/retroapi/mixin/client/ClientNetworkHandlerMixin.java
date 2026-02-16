@@ -69,5 +69,13 @@ public class ClientNetworkHandlerMixin {
 		for (int i = 0; i < access.retroapi$getExtCount(); i++) {
 			extended.set(indices[i], blockIds[i], meta[i]);
 		}
+
+		// Trigger heightmap and sky light recalculation now that extended blocks are loaded
+		chunk.populateHeightMap();
+
+		// Re-render the chunk
+		int baseX = chunkX * 16;
+		int baseZ = chunkZ * 16;
+		world.notifyRegionChanged(baseX, 0, baseZ, baseX + 15, 127, baseZ + 15);
 	}
 }
