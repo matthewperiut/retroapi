@@ -134,6 +134,8 @@ public class InventoryMenuMixin {
 		if (retroapi$syncEntries == null) return;
 		if (id >= 0 && id < retroapi$syncEntries.length) {
 			retroapi$syncEntries[id].setTargetValue(value);
+			retroapi$syncEntries[id].setMenuValue(this, value);
+			retroapi$syncCache[id] = value;
 		}
 	}
 

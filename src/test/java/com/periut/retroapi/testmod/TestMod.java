@@ -38,6 +38,8 @@ public class TestMod implements ModInitializer {
 			FreezerBlockEntity.class, FreezerBlockEntity::new
 		);
 
+	public static final RetroIdentifier FREEZER_SCREEN = new RetroIdentifier("retroapi_test", "freezer_screen");
+
 	public static final int BLOCK_COUNT = 200;
 	public static final Block[] BLOCKS = new Block[BLOCK_COUNT];
 	public static final int ITEM_COUNT = 200;
@@ -108,7 +110,7 @@ public class TestMod implements ModInitializer {
 			.setActivated((world, x, y, z, player) -> {
 				BlockEntity be = world.getBlockEntity(x, y, z);
 				if (be instanceof FreezerBlockEntity freezer) {
-					MenuHelper.open(player, new FreezerMenu(player.inventory, freezer), MenuHelper.FURNACE, freezer);
+					MenuHelper.open(player, new FreezerMenu(player.inventory, freezer), MenuHelper.FURNACE, freezer, FREEZER_SCREEN);
 				}
 				return true;
 			})

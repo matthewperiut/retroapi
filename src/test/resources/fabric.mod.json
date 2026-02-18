@@ -12,6 +12,9 @@
 	"entrypoints": {
 		"init": [
 			"com.periut.retroapi.testmod.TestMod"
+		],
+		"client-init": [
+			"com.periut.retroapi.testmod.TestModClient"
 		]
 	},
 	"mixins": [

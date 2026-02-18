@@ -9,4 +9,6 @@ public class RetroAPINetworking {
 		ChannelRegistry.register(ChannelIdentifiers.from("retroapi", "id_sync"), true, false);
 	public static final NamespacedIdentifier CHUNK_EXTENDED_CHANNEL =
 		ChannelRegistry.register(ChannelIdentifiers.from("retroapi", "chunk_ext"), true, false);
+	public static final NamespacedIdentifier OPEN_SCREEN_CHANNEL =
+		ChannelRegistry.register(ChannelIdentifiers.from("retroapi", "open_screen"), true, false);
 }
