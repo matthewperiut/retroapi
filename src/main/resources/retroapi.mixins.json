@@ -9,6 +9,8 @@
 		"register.BlockEntityAccessor",
 		"register.StatsExpandMixin",
 		"register.BlockMixin",
+		"register.InventoryMenuMixin",
+		"register.InventorySlotAccessor",
 		"register.ItemMixin",
 		"register.ItemStackMixin",
 		"network.BlockUpdatePacketMixin",

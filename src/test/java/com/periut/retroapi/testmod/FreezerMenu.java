@@ -1,15 +1,14 @@
 package com.periut.retroapi.testmod;
 
-import com.periut.retroapi.register.blockentity.RetroMenu;
 import com.periut.retroapi.register.blockentity.SyncField;
 import net.minecraft.entity.mob.player.PlayerEntity;
 import net.minecraft.entity.mob.player.PlayerInventory;
+import net.minecraft.inventory.menu.InventoryMenu;
 import net.minecraft.inventory.slot.FurnaceResultSlot;
 import net.minecraft.inventory.slot.InventorySlot;
 import net.minecraft.item.ItemStack;
 
-public class FreezerMenu extends RetroMenu {
-	// Synced in this order to match FurnaceMenu's data IDs (0, 1, 2)
+public class FreezerMenu extends InventoryMenu {
 	@SyncField("cookTime")
 	public int cookTime;
 
@@ -20,8 +19,6 @@ public class FreezerMenu extends RetroMenu {
 	public int totalFuelTime;
 
 	public FreezerMenu(PlayerInventory playerInv, FreezerBlockEntity freezer) {
-		super(freezer);
-
 		// Slot 0: input (water bucket)
 		addSlot(new InventorySlot(freezer, 0, 56, 17));
 		// Slot 1: fuel

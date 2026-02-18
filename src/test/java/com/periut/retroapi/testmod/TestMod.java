@@ -2,8 +2,8 @@ package com.periut.retroapi.testmod;
 
 import com.periut.retroapi.register.RetroIdentifier;
 import com.periut.retroapi.register.block.RetroBlockAccess;
+import com.periut.retroapi.register.blockentity.MenuHelper;
 import com.periut.retroapi.register.blockentity.RetroBlockEntityType;
-import com.periut.retroapi.register.blockentity.RetroMenu;
 import com.periut.retroapi.register.item.RetroItemAccess;
 import com.periut.retroapi.register.rendertype.RenderType;
 import com.periut.retroapi.register.rendertype.RenderTypes;
@@ -92,7 +92,7 @@ public class TestMod implements ModInitializer {
 				BlockEntity be = world.getBlockEntity(x, y, z);
 				if (be instanceof CrateBlockEntity crate) {
 					crate.openCount++;
-					RetroMenu.open(player, new CrateMenu(player.inventory, crate));
+					MenuHelper.open(player, new CrateMenu(player.inventory, crate), MenuHelper.CHEST, crate);
 				}
 				return true;
 			})
@@ -108,7 +108,7 @@ public class TestMod implements ModInitializer {
 			.setActivated((world, x, y, z, player) -> {
 				BlockEntity be = world.getBlockEntity(x, y, z);
 				if (be instanceof FreezerBlockEntity freezer) {
-					RetroMenu.open(player, new FreezerMenu(player.inventory, freezer), RetroMenu.MENU_FURNACE);
+					MenuHelper.open(player, new FreezerMenu(player.inventory, freezer), MenuHelper.FURNACE, freezer);
 				}
 				return true;
 			})

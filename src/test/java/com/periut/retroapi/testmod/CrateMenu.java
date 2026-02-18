@@ -1,18 +1,16 @@
 package com.periut.retroapi.testmod;
 
-import com.periut.retroapi.register.blockentity.RetroMenu;
 import com.periut.retroapi.register.blockentity.SyncField;
 import net.minecraft.entity.mob.player.PlayerEntity;
 import net.minecraft.entity.mob.player.PlayerInventory;
+import net.minecraft.inventory.menu.InventoryMenu;
 import net.minecraft.inventory.slot.InventorySlot;
 
-public class CrateMenu extends RetroMenu {
+public class CrateMenu extends InventoryMenu {
 	@SyncField("openCount")
 	public int openCount;
 
 	public CrateMenu(PlayerInventory playerInv, CrateBlockEntity crate) {
-		super(crate);
-
 		// Crate inventory slots (3 rows of 9)
 		for (int row = 0; row < 3; row++) {
 			for (int col = 0; col < 9; col++) {

@@ -6,16 +6,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks an {@code int} field on a {@link RetroMenu} subclass for automatic
- * server→client synchronization via the vanilla inventory menu data protocol.
+ * Marks an {@code int} field on an {@link net.minecraft.inventory.menu.InventoryMenu}
+ * subclass for automatic server→client synchronization via the vanilla inventory
+ * menu data protocol.
  * <p>
  * The annotation's value is the name of the corresponding {@code int} field
- * on the block entity. Each tick, the menu compares its cached copy to the
- * block entity's value and sends an update packet when they differ.
+ * on a slot inventory (typically a block entity). The mixin discovers the target
+ * object by scanning the menu's slots for non-player inventories.
+ * Each tick, the menu compares its cached copy to the block entity's value
+ * and sends an update packet when they differ.
  * <p>
  * Example:
  * <pre>
- * public class FurnaceMenu extends RetroMenu {
+ * public class FreezerMenu extends InventoryMenu {
  *     &#64;SyncField("cookTime")
  *     public int cookTime;
  *
